@@ -123,17 +123,25 @@ export function QuizRunner({ config }: QuizRunnerProps) {
   const progressPercent = Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100);
 
   return (
-    <div className="min-h-screen bg-[#1A1A1A] text-[#272e27] flex flex-col justify-between font-sans">
-      {/* Centered Mobile-First Stage */}
-      <div className="w-full max-w-[440px] mx-auto min-h-screen flex flex-col justify-between bg-white shadow-2xl relative">
+    <div className="min-h-screen bg-[#F9F8F6] text-[#272e27] flex flex-col justify-between font-sans">
+      {/* Centered Mobile-First Stage with exact OOOPEN Lab canvas */}
+      <div
+        className="w-full max-w-[540px] mx-auto min-h-screen flex flex-col justify-between relative shadow-sm"
+        style={{
+          backgroundImage: gameState === 'intro' ? "url('/images/ooopen_bg.jpg')" : "url('/images/q_bg.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
         
         {/* Main Interactive Container */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col justify-between">
           
           {/* Top Progress Bar (Cake.me 1:1 Capsule Outline) */}
-          <div className="px-5 pt-4 pb-2 bg-[#36B898] border-b-2 border-[#272e27]/20 flex items-center justify-between space-x-3">
+          <div className="px-5 pt-6 pb-2 flex items-center justify-between space-x-3">
             <div className="flex-1">
-              <div className="h-4 bg-white rounded-full border-2 border-[#272e27] overflow-hidden p-0.5">
+              <div className="h-3 bg-white/80 rounded-full border border-[#272e27]/30 overflow-hidden p-0.5 shadow-inner">
                 <div
                   className="h-full bg-[#13ab67] rounded-full transition-all duration-300"
                   style={{ width: `${gameState === 'intro' ? 10 : gameState === 'result' ? 100 : progressPercent}%` }}
@@ -141,7 +149,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               </div>
             </div>
             {gameState === 'playing' && (
-              <span className="font-pixel text-[9px] text-white">
+              <span className="font-pixel text-[9px] text-[#272e27] bg-white/70 px-2 py-0.5 rounded-full border border-[#272e27]/20">
                 {currentQuestionIndex + 1}/{totalQuestions}
               </span>
             )}
@@ -149,34 +157,34 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
           {/* STATE 1: INTRO (Pixel Art Hero Showcase) */}
           {gameState === 'intro' && (
-            <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
-              <div className="relative w-full h-[220px] rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] bg-[#272e27]">
+            <div className="flex-1 flex flex-col justify-between p-5">
+              <div className="relative w-full h-[240px] rounded-2xl overflow-hidden border-2 border-[#272e27]/30 shadow-md bg-transparent mt-2">
                 <Image
                   src="/images/pixel/scene_1_burnout.png"
                   alt="2025 Consumer Dilemma"
                   fill
-                  className="object-cover"
+                  className="object-cover rounded-2xl"
                   style={{ imageRendering: 'pixelated' }}
                   priority
                 />
               </div>
 
-              <div className="my-auto py-4 text-center px-2">
-                <span className="font-pixel text-[8px] bg-[#FFD482] text-[#272e27] px-2.5 py-1 rounded-md border-2 border-[#272e27] shadow-[2px_2px_0px_#272e27] uppercase">
+              <div className="my-auto py-6 text-center px-2 bg-white/85 backdrop-blur-xs rounded-2xl border border-[#272e27]/15 p-4 my-4 shadow-sm">
+                <span className="font-pixel text-[8px] bg-[#FFD482] text-[#272e27] px-2.5 py-1 rounded-md border border-[#272e27]/40 uppercase shadow-xs">
                   CONSUMER RADAR 2025
                 </span>
                 <h1 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight leading-relaxed mt-4 mb-2">
                   {config.title}
                 </h1>
-                <p className="text-xs text-[#555] font-medium leading-relaxed max-w-xs mx-auto">
+                <p className="text-xs text-[#444] font-medium leading-relaxed max-w-xs mx-auto">
                   {config.subtitle}
                 </p>
               </div>
 
-              <div className="pb-2">
+              <div className="pb-4">
                 <button
                   onClick={handleStart}
-                  className="w-full py-4 bg-[#13ab67] hover:bg-[#0fa05f] text-white font-pixel text-[11px] rounded-xl border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#272e27] transition-all"
+                  className="w-full py-4 bg-[#272e27] hover:bg-black text-white font-pixel text-[11px] rounded-full border-2 border-[#272e27] shadow-[0_4px_0_#111] active:translate-y-1 active:shadow-[0_1px_0_#111] transition-all"
                 >
                   MULAI TES SEKARANG!
                 </button>
@@ -186,9 +194,9 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
           {/* STATE 2: PLAYING (Scene Village + Question + 2 Black Pill Options) */}
           {gameState === 'playing' && currentQ && (
-            <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
+            <div className="flex-1 flex flex-col justify-between p-5">
               {/* Top Pixel Scene Image */}
-              <div className="relative w-full h-[210px] rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] bg-[#272e27]">
+              <div className="relative w-full h-[230px] rounded-2xl overflow-hidden border-2 border-[#272e27]/20 shadow-md bg-[#272e27]">
                 <Image
                   src={currentQ.imageSrc}
                   alt={currentQ.scenarioTitle}
@@ -197,14 +205,14 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                   style={{ imageRendering: 'pixelated' }}
                   priority
                 />
-                <div className="absolute bottom-2 left-2 bg-[#272e27]/90 text-white px-2 py-1 rounded text-[7.5px] font-pixel border border-white/20">
+                <div className="absolute bottom-2 left-2 bg-[#272e27]/90 text-white px-2.5 py-1 rounded text-[7.5px] font-pixel border border-white/20 shadow-sm">
                   {currentQ.scenarioTitle}
                 </div>
               </div>
 
               {/* Centered Question */}
-              <div className="my-5 text-center px-2">
-                <div className="text-[8px] font-pixel text-[#13ab67] uppercase tracking-wider mb-2">
+              <div className="my-4 text-center px-3 py-3 bg-white/80 backdrop-blur-xs rounded-2xl border border-[#272e27]/15 shadow-xs">
+                <div className="text-[8px] font-pixel text-[#13ab67] uppercase tracking-wider mb-1.5">
                   {currentQ.categoryBadge}
                 </div>
                 <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug">
@@ -220,13 +228,13 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                     <button
                       key={choice.id}
                       onClick={() => handleSelectChoice(choice.targetTrait, choice.id)}
-                      className={`w-full text-left p-3.5 rounded-full border-2 transition-all flex items-center space-x-3 ${
+                      className={`w-full text-left p-3.5 rounded-full border transition-all flex items-center space-x-3 ${
                         isSelected
                           ? 'bg-[#13ab67] border-[#13ab67] text-white scale-[0.98]'
                           : 'bg-[#272e27] hover:bg-black border-[#272e27] text-white shadow-[0_3px_0_#111] active:translate-y-0.5'
                       }`}
                     >
-                      <span className="w-6 h-6 rounded-md bg-white/20 text-white font-pixel text-[9px] flex items-center justify-center shrink-0 border border-white/20">
+                      <span className="w-6 h-6 rounded-full bg-white/20 text-white font-pixel text-[9px] flex items-center justify-center shrink-0 border border-white/20">
                         {idx === 0 ? 'A' : 'B'}
                       </span>
                       <span className="text-xs sm:text-sm font-semibold leading-tight">
@@ -256,11 +264,16 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
           {/* STATE 4: RESULT (High-Density 9:16 Persona Card) */}
           {gameState === 'result' && activeResult && (
-            <div className="flex-1 p-4 bg-[#F8F9FA] overflow-y-auto">
+            <div className="flex-1 p-4 overflow-y-auto">
               {/* Persona Story Card */}
               <div
                 ref={cardRef}
-                className="bg-[#FFFDF7] border-4 border-[#272e27] p-4 shadow-[6px_6px_0px_#272e27] mb-4 text-[#272e27]"
+                className="bg-[#FFFDF7] border-4 border-[#272e27] p-4 shadow-[6px_6px_0px_#272e27] mb-4 text-[#272e27] relative"
+                style={{
+                  backgroundImage: "url('/images/q_bg.jpg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center top',
+                }}
               >
                 {/* Header Subtitle */}
                 <div className="flex items-center justify-between border-b-2 border-[#272e27]/20 pb-2 mb-3">
