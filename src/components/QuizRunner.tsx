@@ -74,7 +74,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         setResultTrait(topTrait);
         triggerCalculationScreen(topTrait);
       }
-    }, 450);
+    }, 200);
   };
 
   const triggerCalculationScreen = (finalTrait: string) => {
@@ -99,7 +99,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         origin: { y: 0.6 },
         colors: ['#13ab67', '#36B898', '#FEE440', '#FF70A6'],
       });
-    }, 1800);
+    }, 800);
   };
 
   const handleNativeShare = async () => {

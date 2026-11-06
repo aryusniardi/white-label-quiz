@@ -1,5 +1,4 @@
-import os
-import subprocess
+import os, subprocess
 
 env = os.environ.copy()
 with open('/home/ubuntu/.bashrc') as f:
@@ -16,7 +15,7 @@ cwd = '/home/ubuntu/white-label-quiz'
 
 print("Commit and Push...")
 subprocess.run(['git', 'add', '.'], cwd=cwd, env=env)
-subprocess.run(['git', 'commit', '-m', 'feat: add looping 8-bit chiptune audio engine with mute toggle matching OOOPEN Lab'], cwd=cwd, env=env)
+subprocess.run(['git', 'commit', '-m', 'perf: make transitions instant (200ms step advance, 800ms calculation) to eliminate stall'], cwd=cwd, env=env)
 p_push = subprocess.run(['git', 'push', f'https://aryusniardi:{token}@github.com/aryusniardi/white-label-quiz.git', 'main:main'], cwd=cwd, env=env, capture_output=True, text=True)
 print("PUSH:", p_push.returncode, p_push.stderr)
 
