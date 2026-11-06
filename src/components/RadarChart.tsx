@@ -81,7 +81,7 @@ export function RadarChart({ stats }: RadarChartProps) {
           );
         })}
 
-        {/* Data polygon with pastel green & hard stroke */}
+        {/* Data polygon with pixel green & stepped stroke */}
         <polygon
           points={polygonPoints}
           fill="rgba(19, 171, 103, 0.45)"
@@ -89,12 +89,12 @@ export function RadarChart({ stats }: RadarChartProps) {
           strokeWidth="3"
         />
 
-        {/* Data dots */}
+        {/* Data pixel squares */}
         {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#272e27" />
+          <rect key={i} x={p.x - 3} y={p.y - 3} width="6" height="6" fill="#272e27" stroke="#FFF" strokeWidth="1" />
         ))}
 
-        {/* Labels */}
+        {/* Labels with 8-bit pixel font */}
         {labels.map((dim, i) => {
           const angle = i * angleStep - Math.PI / 2;
           const labelRadius = radius + 18;
@@ -106,7 +106,7 @@ export function RadarChart({ stats }: RadarChartProps) {
               x={lx}
               y={ly + 3}
               textAnchor="middle"
-              className="text-[8px] font-black fill-[#272e27] tracking-wider font-mono"
+              className="text-[6.5px] fill-[#272e27] font-pixel"
             >
               {dim.label}
             </text>

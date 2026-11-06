@@ -131,7 +131,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         <div className="flex-1 flex flex-col">
           
           {/* Top Progress Bar (Cake.me 1:1 Capsule Outline) */}
-          <div className="px-5 pt-4 pb-2 bg-[#36B898] border-b-2 border-[#272e27]/20 flex items-center justify-between">
+          <div className="px-5 pt-4 pb-2 bg-[#36B898] border-b-2 border-[#272e27]/20 flex items-center justify-between space-x-3">
             <div className="flex-1">
               <div className="h-4 bg-white rounded-full border-2 border-[#272e27] overflow-hidden p-0.5">
                 <div
@@ -140,49 +140,45 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 />
               </div>
             </div>
+            {gameState === 'playing' && (
+              <span className="font-pixel text-[9px] text-white">
+                {currentQuestionIndex + 1}/{totalQuestions}
+              </span>
+            )}
           </div>
 
           {/* STATE 1: INTRO (Pixel Art Hero Showcase) */}
           {gameState === 'intro' && (
             <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
-              <div className="relative w-full h-[220px] rounded-2xl overflow-hidden border-2 border-[#272e27]/20 shadow-inner bg-emerald-950">
+              <div className="relative w-full h-[220px] rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] bg-[#272e27]">
                 <Image
                   src="/images/pixel/scene_1_burnout.png"
                   alt="2025 Consumer Dilemma"
                   fill
                   className="object-cover"
+                  style={{ imageRendering: 'pixelated' }}
                   priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-                <div className="absolute bottom-3 left-3 right-3 text-white">
-                  <span className="bg-[#13ab67] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">
-                    AUTHENTIC PIXEL ART
-                  </span>
-                  <p className="text-xs font-bold drop-shadow mt-1">
-                    Visual di-generate via Google Gemini Pixel Engine
-                  </p>
-                </div>
               </div>
 
-              <div className="my-6 text-center px-4">
-                <div className="inline-block text-[11px] font-black tracking-widest text-[#13ab67] bg-[#13ab67]/10 px-3 py-1 rounded-full mb-3">
-                  {config.brandName} • CONSUMER RADAR 2025
-                </div>
-                <h1 className="text-xl sm:text-2xl font-black text-[#272e27] leading-tight mb-2">
+              <div className="my-auto py-4 text-center px-2">
+                <span className="font-pixel text-[8px] bg-[#FFD482] text-[#272e27] px-2.5 py-1 rounded-md border-2 border-[#272e27] shadow-[2px_2px_0px_#272e27] uppercase">
+                  CONSUMER RADAR 2025
+                </span>
+                <h1 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight leading-relaxed mt-4 mb-2">
                   {config.title}
                 </h1>
-                <p className="text-xs text-[#555] leading-relaxed">
+                <p className="text-xs text-[#555] font-medium leading-relaxed max-w-xs mx-auto">
                   {config.subtitle}
                 </p>
               </div>
 
-              {/* Big Cake.me Pill CTA */}
-              <div className="pb-4">
+              <div className="pb-2">
                 <button
                   onClick={handleStart}
-                  className="w-full py-4 bg-[#272e27] hover:bg-black text-white text-base font-bold rounded-full border-4 border-[#272e27] shadow-[0_4px_0_#111] active:translate-y-1 transition-all"
+                  className="w-full py-4 bg-[#13ab67] hover:bg-[#0fa05f] text-white font-pixel text-[11px] rounded-xl border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#272e27] transition-all"
                 >
-                  Mulai Tes Sekarang!
+                  MULAI TES SEKARANG!
                 </button>
               </div>
             </div>
@@ -192,22 +188,23 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           {gameState === 'playing' && currentQ && (
             <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
               {/* Top Pixel Scene Image */}
-              <div className="relative w-full h-[210px] rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[0_4px_0_#272e27] bg-[#272e27]">
+              <div className="relative w-full h-[210px] rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] bg-[#272e27]">
                 <Image
                   src={currentQ.imageSrc}
                   alt={currentQ.scenarioTitle}
                   fill
                   className="object-cover"
+                  style={{ imageRendering: 'pixelated' }}
                   priority
                 />
-                <div className="absolute bottom-2 left-2 bg-[#272e27]/85 backdrop-blur-sm text-white px-2 py-1 rounded text-[10px] font-mono font-bold">
+                <div className="absolute bottom-2 left-2 bg-[#272e27]/90 text-white px-2 py-1 rounded text-[7.5px] font-pixel border border-white/20">
                   {currentQ.scenarioTitle}
                 </div>
               </div>
 
               {/* Centered Question */}
               <div className="my-5 text-center px-2">
-                <div className="text-[10px] font-mono font-bold text-[#13ab67] uppercase tracking-wider mb-1">
+                <div className="text-[8px] font-pixel text-[#13ab67] uppercase tracking-wider mb-2">
                   {currentQ.categoryBadge}
                 </div>
                 <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug">
@@ -229,10 +226,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                           : 'bg-[#272e27] hover:bg-black border-[#272e27] text-white shadow-[0_3px_0_#111] active:translate-y-0.5'
                       }`}
                     >
-                      <span className="w-6 h-6 rounded-full bg-white/20 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-md bg-white/20 text-white font-pixel text-[9px] flex items-center justify-center shrink-0 border border-white/20">
                         {idx === 0 ? 'A' : 'B'}
                       </span>
-                      <span className="text-xs sm:text-sm font-medium leading-tight">
+                      <span className="text-xs sm:text-sm font-semibold leading-tight">
                         {choice.text}
                       </span>
                     </button>
@@ -248,11 +245,11 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               <div className="w-16 h-16 bg-white rounded-2xl border-4 border-[#272e27] flex items-center justify-center text-3xl shadow-[4px_4px_0px_#272e27] animate-bounce mb-4">
                 ⚡
               </div>
-              <h3 className="text-base font-black text-[#272e27] tracking-wider uppercase mb-1">
+              <h3 className="text-xs sm:text-sm font-pixel text-[#272e27] tracking-wider uppercase mb-2">
                 MEMETAKAN PROFIL BELANJAMU...
               </h3>
-              <p className="text-xs text-white/90">
-                Mengkalkulasi indeks komparasi 2025
+              <p className="text-[10px] font-pixel text-white/90">
+                MENGKALKULASI RADAR 2025
               </p>
             </div>
           )}
@@ -267,10 +264,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               >
                 {/* Header Subtitle */}
                 <div className="flex items-center justify-between border-b-2 border-[#272e27]/20 pb-2 mb-3">
-                  <span className="text-[9px] font-black tracking-widest text-[#13ab67] uppercase">
-                    {config.brandName} • 2025 CONSUMER RADAR
+                  <span className="text-[8px] font-pixel text-[#13ab67] uppercase">
+                    {config.brandName} • 2025 RADAR
                   </span>
-                  <span className="text-[9px] font-mono font-bold bg-[#272e27] text-white px-1.5 py-0.5 rounded">
+                  <span className="text-[7.5px] font-pixel bg-[#272e27] text-white px-2 py-1 rounded">
                     BURNOUT: {activeResult.stressCopingIndex}
                   </span>
                 </div>
@@ -278,22 +275,23 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 {/* Character Badge & Title */}
                 <div className="text-center my-2">
                   {activeResult.badgeImage ? (
-                    <div className="relative w-20 h-20 mx-auto mb-2 rounded-xl overflow-hidden border-2 border-[#272e27] shadow-[2px_2px_0px_#272e27]">
+                    <div className="relative w-24 h-24 mx-auto mb-2 rounded-xl overflow-hidden border-3 border-[#272e27] shadow-[3px_3px_0px_#272e27] bg-[#EAEAEA]">
                       <Image
                         src={activeResult.badgeImage}
                         alt={activeResult.name}
                         fill
                         className="object-cover"
+                        style={{ imageRendering: 'pixelated' }}
                       />
                     </div>
                   ) : (
                     <div className="text-4xl mb-1">{activeResult.badge}</div>
                   )}
-                  <h2 className="text-base sm:text-lg font-black uppercase text-[#272e27] tracking-tight">
+                  <h2 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight mt-2">
                     {activeResult.name}
                   </h2>
-                  <p className="text-[11px] font-bold text-[#13ab67] mt-0.5">
-                    {activeResult.tagline}
+                  <p className="text-[9px] font-bold text-[#13ab67] mt-1 font-mono">
+                    "{activeResult.tagline}"
                   </p>
                 </div>
 
@@ -305,30 +303,30 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 {/* Persona Attributes Breakdown */}
                 <div className="space-y-2 text-xs">
                   <div className="bg-[#FAEDCD] p-2.5 rounded-lg border-2 border-[#272e27]/20">
-                    <span className="font-bold text-[10px] block text-[#6b4226] uppercase">TRIGGER BELANJA:</span>
-                    <span className="text-[11px] font-semibold">{activeResult.spendingTrigger}</span>
+                    <span className="font-pixel text-[8px] block text-[#6b4226] uppercase mb-0.5">TRIGGER BELANJA:</span>
+                    <span className="text-[10.5px] font-semibold">{activeResult.spendingTrigger}</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
                     <div className="bg-[#E9F5ED] p-2 rounded-lg border-2 border-[#13ab67]/30">
-                      <div className="text-[9px] font-black text-[#13ab67] uppercase">CIRCLE COCOK</div>
-                      <div className="font-bold mt-0.5">{activeResult.compatiblePartner}</div>
+                      <div className="text-[8px] font-pixel text-[#13ab67] uppercase mb-0.5">CIRCLE COCOK</div>
+                      <div className="font-bold text-[10px] mt-0.5">{activeResult.compatiblePartner}</div>
                     </div>
                     <div className="bg-[#FDE8E8] p-2 rounded-lg border-2 border-[#E63946]/30">
-                      <div className="text-[9px] font-black text-[#E63946] uppercase">POTENSI BENTROK</div>
-                      <div className="font-bold mt-0.5">{activeResult.clashingPartner}</div>
+                      <div className="text-[8px] font-pixel text-[#E63946] uppercase mb-0.5">POTENSI BENTROK</div>
+                      <div className="font-bold text-[10px] mt-0.5">{activeResult.clashingPartner}</div>
                     </div>
                   </div>
 
                   <div className="bg-white p-2.5 rounded-lg border-2 border-[#272e27]/15 text-[10px] leading-relaxed text-[#444]">
-                    <span className="font-black text-[#272e27]">SARAN SURVIVAL: </span>
+                    <span className="font-pixel text-[8px] text-[#272e27] block mb-0.5">SARAN SURVIVAL:</span>
                     {activeResult.actionAdvice}
                   </div>
                 </div>
 
                 {/* Footer Watermark */}
-                <div className="mt-3 pt-2 border-t-2 border-[#272e27]/15 text-center text-[9px] font-mono text-[#888]">
-                  VERIFIED ZERO-PARTY DATA • PULSE INSIGHTS LAB
+                <div className="mt-3 pt-2 border-t-2 border-[#272e27]/15 text-center text-[8px] font-pixel text-[#888]">
+                  VERIFIED ZERO-PARTY DATA
                 </div>
               </div>
 
@@ -337,9 +335,9 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 <button
                   onClick={handleNativeShare}
                   disabled={isExporting}
-                  className="w-full py-3.5 bg-[#FEE440] hover:bg-[#fedd1c] text-[#272e27] text-sm font-black rounded-full border-3 border-[#272e27] shadow-[0_4px_0_#272e27] active:translate-y-0.5 transition-all"
+                  className="w-full py-3.5 px-4 bg-[#FFD482] hover:bg-[#ffc857] text-[#272e27] font-pixel text-[10px] rounded-xl border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#272e27] transition-all flex items-center justify-center space-x-2"
                 >
-                  {isExporting ? 'MENYIAPKAN GAMBAR...' : 'SHARE STORY / SIMPAN KE GALERI'}
+                  <span>{isExporting ? 'MEMPROSES KARTU...' : 'SHARE STORY / SIMPAN KE GALERI'}</span>
                 </button>
                 <button
                   onClick={handleStart}

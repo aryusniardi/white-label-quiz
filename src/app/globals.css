@@ -7,9 +7,42 @@
     --border-color: #2D2424;
     --shadow-color: #2D2424;
     --primary-pastel: #FFD482;
-    --secondary-pastel: #BCE3C5;
-    --accent-pink: #FFAAA6;
+    --secondary-pastel: #B4E4FF;
   }
+}
+
+.font-pixel {
+  font-family: var(--font-pixel), monospace, sans-serif;
+  letter-spacing: -0.05em;
+}
+
+.font-pixel-heading {
+  font-family: var(--font-pixel-heading), monospace, sans-serif;
+}
+
+/* Pixel Border Utility */
+.pixel-box {
+  background: white;
+  border: 3px solid #272e27;
+  box-shadow: 4px 4px 0px #272e27;
+}
+
+.pixel-btn {
+  background: #272e27;
+  color: white;
+  border: 3px solid #272e27;
+  box-shadow: 4px 4px 0px #151a15;
+  transition: all 0.1s ease;
+}
+
+.pixel-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px #151a15;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #151a15;
 }
 
 /* Playful Neo-Brutalist Utility Classes */
