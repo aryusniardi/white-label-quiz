@@ -17,7 +17,7 @@ token = env.get('GITHUB_TOKEN')
 
 print("Commit and Push...")
 subprocess.run(['git', 'add', '.'], cwd='/home/ubuntu/white-label-quiz', env=env)
-subprocess.run(['git', 'commit', '-m', 'feat: 100% pixelated retro styling for cards, typography, and crisp edges'], cwd='/home/ubuntu/white-label-quiz', env=env)
+subprocess.run(['git', 'commit', '-m', 'fix: radar chart scaling bug so trait polygon fills hexagonal web clearly'], cwd='/home/ubuntu/white-label-quiz', env=env)
 p = subprocess.run(['git', 'push', f"https://aryusniardi:{token}@github.com/aryusniardi/white-label-quiz.git", 'main'], cwd='/home/ubuntu/white-label-quiz', env=env, capture_output=True, text=True)
 print("PUSH:", p.returncode, p.stderr)
 
