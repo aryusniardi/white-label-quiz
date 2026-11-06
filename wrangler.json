@@ -1,0 +1,9 @@
+{
+  "name": "white-label-quiz",
+  "routes": [
+    {
+      "pattern": "*",
+      "zone_name": ""
+    }
+  ]
+}
