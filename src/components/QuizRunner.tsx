@@ -260,14 +260,14 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               {/* Persona Story Card */}
               <div
                 ref={cardRef}
-                className="bg-[#FFFDF7] border-4 border-[#272e27] rounded-2xl p-4 shadow-[6px_6px_0px_#272e27] mb-4 text-[#272e27]"
+                className="bg-[#FFFDF7] border-4 border-[#272e27] p-4 shadow-[6px_6px_0px_#272e27] mb-4 text-[#272e27]"
               >
                 {/* Header Subtitle */}
                 <div className="flex items-center justify-between border-b-2 border-[#272e27]/20 pb-2 mb-3">
                   <span className="text-[8px] font-pixel text-[#13ab67] uppercase">
                     {config.brandName} • 2025 RADAR
                   </span>
-                  <span className="text-[7.5px] font-pixel bg-[#272e27] text-white px-2 py-1 rounded">
+                  <span className="text-[7.5px] font-pixel bg-[#272e27] text-white px-2 py-1">
                     BURNOUT: {activeResult.stressCopingIndex}
                   </span>
                 </div>
@@ -275,7 +275,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 {/* Character Badge & Title */}
                 <div className="text-center my-2">
                   {activeResult.badgeImage ? (
-                    <div className="relative w-24 h-24 mx-auto mb-2 rounded-xl overflow-hidden border-3 border-[#272e27] shadow-[3px_3px_0px_#272e27] bg-[#EAEAEA]">
+                    <div className="relative w-24 h-24 mx-auto mb-2 overflow-hidden border-4 border-[#272e27] shadow-[3px_3px_0px_#272e27] bg-[#EAEAEA]">
                       <Image
                         src={activeResult.badgeImage}
                         alt={activeResult.name}
@@ -290,42 +290,42 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                   <h2 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight mt-2">
                     {activeResult.name}
                   </h2>
-                  <p className="text-[9px] font-bold text-[#13ab67] mt-1 font-mono">
+                  <p className="text-[14px] text-[#13ab67] mt-1 font-fun font-bold">
                     "{activeResult.tagline}"
                   </p>
                 </div>
 
                 {/* Radar Chart 6 Sisi */}
-                <div className="my-3 py-1 bg-white/70 border-2 border-[#272e27]/15 rounded-xl">
+                <div className="my-3 py-1 bg-white/70 border-2 border-[#272e27]">
                   <RadarChart stats={activeResult.dimensions} />
                 </div>
 
                 {/* Persona Attributes Breakdown */}
-                <div className="space-y-2 text-xs">
-                  <div className="bg-[#FAEDCD] p-2.5 rounded-lg border-2 border-[#272e27]/20">
+                <div className="space-y-2 text-xs font-fun">
+                  <div className="bg-[#FAEDCD] p-2.5 border-2 border-[#272e27]">
                     <span className="font-pixel text-[8px] block text-[#6b4226] uppercase mb-0.5">TRIGGER BELANJA:</span>
-                    <span className="text-[10.5px] font-semibold">{activeResult.spendingTrigger}</span>
+                    <span className="text-[14px] leading-tight text-[#272e27]">{activeResult.spendingTrigger}</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
-                    <div className="bg-[#E9F5ED] p-2 rounded-lg border-2 border-[#13ab67]/30">
-                      <div className="text-[8px] font-pixel text-[#13ab67] uppercase mb-0.5">CIRCLE COCOK</div>
-                      <div className="font-bold text-[10px] mt-0.5">{activeResult.compatiblePartner}</div>
+                  <div className="grid grid-cols-2 gap-2 text-center">
+                    <div className="bg-[#E9F5ED] p-2 border-2 border-[#13ab67]">
+                      <div className="text-[7.5px] font-pixel text-[#13ab67] uppercase mb-0.5">CIRCLE COCOK</div>
+                      <div className="text-[13px] leading-tight font-bold text-[#155724]">{activeResult.compatiblePartner}</div>
                     </div>
-                    <div className="bg-[#FDE8E8] p-2 rounded-lg border-2 border-[#E63946]/30">
-                      <div className="text-[8px] font-pixel text-[#E63946] uppercase mb-0.5">POTENSI BENTROK</div>
-                      <div className="font-bold text-[10px] mt-0.5">{activeResult.clashingPartner}</div>
+                    <div className="bg-[#FDE8E8] p-2 border-2 border-[#E63946]">
+                      <div className="text-[7.5px] font-pixel text-[#E63946] uppercase mb-0.5">POTENSI BENTROK</div>
+                      <div className="text-[13px] leading-tight font-bold text-[#721c24]">{activeResult.clashingPartner}</div>
                     </div>
                   </div>
 
-                  <div className="bg-white p-2.5 rounded-lg border-2 border-[#272e27]/15 text-[10px] leading-relaxed text-[#444]">
+                  <div className="bg-white p-2.5 border-2 border-[#272e27] text-[13px] leading-snug text-[#272e27]">
                     <span className="font-pixel text-[8px] text-[#272e27] block mb-0.5">SARAN SURVIVAL:</span>
                     {activeResult.actionAdvice}
                   </div>
                 </div>
 
                 {/* Footer Watermark */}
-                <div className="mt-3 pt-2 border-t-2 border-[#272e27]/15 text-center text-[8px] font-pixel text-[#888]">
+                <div className="mt-3 pt-2 border-t-2 border-[#272e27]/20 text-center text-[8px] font-pixel text-[#888]">
                   VERIFIED ZERO-PARTY DATA
                 </div>
               </div>
@@ -335,13 +335,13 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 <button
                   onClick={handleNativeShare}
                   disabled={isExporting}
-                  className="w-full py-3.5 px-4 bg-[#FFD482] hover:bg-[#ffc857] text-[#272e27] font-pixel text-[10px] rounded-xl border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#272e27] transition-all flex items-center justify-center space-x-2"
+                  className="w-full py-3.5 px-4 bg-[#FFD482] hover:bg-[#ffc857] text-[#272e27] font-pixel text-[9px] border-4 border-[#272e27] shadow-[4px_4px_0px_#272e27] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#272e27] transition-all flex items-center justify-center space-x-2"
                 >
                   <span>{isExporting ? 'MEMPROSES KARTU...' : 'SHARE STORY / SIMPAN KE GALERI'}</span>
                 </button>
                 <button
                   onClick={handleStart}
-                  className="w-full py-2.5 bg-white hover:bg-gray-100 text-[#272e27] text-xs font-bold rounded-full border-2 border-[#272e27] transition-all"
+                  className="w-full py-2.5 px-4 bg-[#F8F9FA] hover:bg-[#ECEEF0] text-[#272e27] font-pixel text-[8px] border-3 border-[#272e27] shadow-[2px_2px_0px_#272e27] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all text-center"
                 >
                   ULANGI TES
                 </button>
