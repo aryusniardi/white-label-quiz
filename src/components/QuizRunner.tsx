@@ -18,29 +18,12 @@ export function QuizRunner({ config }: QuizRunnerProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [resultTrait, setResultTrait] = useState<string>('M');
   const [isExporting, setIsExporting] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const totalQuestions = config.questions.length;
   const currentQ = config.questions[currentQuestionIndex];
 
-  const toggleSound = () => {
-    if (!audioRef.current) return;
-    if (isMuted) {
-      audioRef.current.play().catch(() => {});
-      setIsMuted(false);
-    } else {
-      audioRef.current.pause();
-      setIsMuted(true);
-    }
-  };
-
   const handleStart = () => {
-    // Play BGM on first interaction
-    if (audioRef.current && !isMuted) {
-      audioRef.current.play().catch(() => {});
-    }
     setGameState('playing');
     setCurrentQuestionIndex(0);
     setScores({});
@@ -141,14 +124,6 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
   return (
     <div className="min-h-screen bg-[#F9F8F6] text-[#272e27] flex flex-col justify-between font-sans">
-      {/* Hidden Audio Player for 8-bit BGM */}
-      <audio
-        ref={audioRef}
-        src="/audio/bgm.mp3"
-        loop
-        preload="auto"
-      />
-
       {/* Centered Mobile-First Stage with exact OOOPEN Lab canvas */}
       <div
         className="w-full max-w-[540px] mx-auto min-h-screen flex flex-col justify-between relative shadow-sm"
@@ -163,7 +138,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         {/* Main Interactive Container */}
         <div className="flex-1 flex flex-col justify-between">
           
-          {/* Top Bar with 1:1 Capsule Progress & Sound Toggle */}
+          {/* Top Bar with 1:1 Capsule Progress */}
           <div className="px-5 pt-6 pb-2 flex items-center justify-between space-x-3">
             <div className="flex-1">
               <div className="h-3 bg-white/80 rounded-full border border-[#272e27]/30 overflow-hidden p-0.5 shadow-inner">
@@ -173,15 +148,6 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 />
               </div>
             </div>
-            
-            {/* Audio Toggle Button (Cake.me Speaker Icon) */}
-            <button
-              onClick={toggleSound}
-              className="w-7 h-7 bg-white/80 border border-[#272e27]/30 rounded-full flex items-center justify-center text-xs active:scale-95 transition-transform"
-              title={isMuted ? "Unmute BGM" : "Mute BGM"}
-            >
-              {isMuted ? "🔇" : "🔊"}
-            </button>
 
             {gameState === 'playing' && (
               <span className="font-pixel text-[9px] text-[#272e27] bg-white/70 px-2 py-0.5 rounded-full border border-[#272e27]/20">
