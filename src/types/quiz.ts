@@ -10,40 +10,34 @@ export interface QuizQuestion {
   categoryBadge: string;
   scenarioTitle: string;
   question: string;
-  sceneType: number;
+  sceneCode: 'burnout' | 'hangout' | 'sale' | 'thr' | 'local' | 'reward';
   choices: QuizChoice[];
 }
 
 export interface QuizResult {
   id: string;
   name: string;
-  roleBadge: string;
-  spriteType: 'layer' | 'cupcake' | 'macaron' | 'strawberry' | 'tiramisu' | 'roll';
-  cardColor: string;
+  archetypeId: string;
+  tagline: string;
+  badge: string;
+  accentColor: string;
   headerBg: string;
-  hashtags: string[];
+  traits: string[];
   description: string;
-  spiderStats: {
-    actionOriented: number;
-    problemSolving: number;
-    innovation: number;
-    teamwork: number;
-    influence: number;
-    attentionToDetail: number;
+  dimensions: {
+    impulse: number;
+    discipline: number;
+    experience: number;
+    social: number;
+    practical: number;
+    resilience: number;
   };
-  workaholismIndex: string;
-  luckyCharm: string;
-  workBesties: string;
-  justCoworkers: string;
-  recommendedRoles: string[];
-}
-
-export interface ThemeConfig {
-  bgColor: string;
-  cardBg: string;
-  primaryColor: string;
-  borderColor: string;
-  borderRadius: string;
+  stressCopingIndex: string;
+  copingItem: string;
+  spendingTrigger: string;
+  compatiblePartner: string;
+  clashingPartner: string;
+  actionAdvice: string;
 }
 
 export interface QuizConfig {
@@ -51,7 +45,6 @@ export interface QuizConfig {
   title: string;
   subtitle: string;
   brandName: string;
-  theme: ThemeConfig;
   questions: QuizQuestion[];
   results: Record<string, QuizResult>;
 }
