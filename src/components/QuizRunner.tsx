@@ -195,8 +195,8 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           {/* STATE 2: PLAYING (Scene Village + Question + 2 Black Pill Options) */}
           {gameState === 'playing' && currentQ && (
             <div className="flex-1 flex flex-col justify-between p-5">
-              {/* Top Pixel Scene Image */}
-              <div className="relative w-full h-[230px] rounded-2xl overflow-hidden border-2 border-[#272e27]/20 shadow-md bg-[#272e27]">
+              {/* Top Pixel Scene Image - Transparent seamless blend */}
+              <div className="relative w-full h-[240px] rounded-2xl overflow-hidden border-2 border-[#272e27]/20 shadow-md bg-transparent">
                 <Image
                   src={currentQ.imageSrc}
                   alt={currentQ.scenarioTitle}
@@ -210,12 +210,12 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 </div>
               </div>
 
-              {/* Centered Question */}
-              <div className="my-4 text-center px-3 py-3 bg-white/80 backdrop-blur-xs rounded-2xl border border-[#272e27]/15 shadow-xs">
-                <div className="text-[8px] font-pixel text-[#13ab67] uppercase tracking-wider mb-1.5">
+              {/* Seamless Centered Question (No heavy white box blocking the scenery) */}
+              <div className="my-3 text-center px-2">
+                <div className="inline-block text-[8px] font-pixel text-[#13ab67] bg-white/80 px-2 py-0.5 rounded border border-[#272e27]/15 uppercase tracking-wider mb-2 shadow-xs">
                   {currentQ.categoryBadge}
                 </div>
-                <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug">
+                <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug drop-shadow-xs">
                   {currentQ.question}
                 </h2>
               </div>

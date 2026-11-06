@@ -16,7 +16,7 @@ remote_url = f"https://aryusniardi:{token}@github.com/aryusniardi/white-label-qu
 
 print("Commit and Push...")
 subprocess.run(['git', 'add', '.'], cwd='/home/ubuntu/white-label-quiz', env=env)
-subprocess.run(['git', 'commit', '-m', 'feat: 1:1 authentic OOOPEN Lab seafoam pixel background and canvas layout'], cwd='/home/ubuntu/white-label-quiz', env=env)
+subprocess.run(['git', 'commit', '-m', 'feat: seamless question blending on authentic OOOPEN Lab seafoam pixel background'], cwd='/home/ubuntu/white-label-quiz', env=env)
 r_push = subprocess.run(['git', 'push', remote_url, 'main'], cwd='/home/ubuntu/white-label-quiz', env=env, capture_output=True, text=True)
 print("PUSH:", r_push.returncode, r_push.stderr[:100])
 
