@@ -23,6 +23,21 @@ White-label interactive psychometric quiz platform engineered for brands, agenci
 - **Delight & Animations:** Lucide Icons, Canvas Confetti
 - **Language:** TypeScript
 
+## ☁️ Deployment ke AWS CloudFront + S3 (Zero-Vercel Cost)
+
+Aplikasi telah dikonfigurasi menggunakan mode **Next.js Static Export (`output: 'export'`)** sehingga:
+- Menghasilkan static HTML/CSS/JS murni di folder `/out`.
+- Dapat di-host langsung di private S3 bucket dan di-distribusikan global via AWS CloudFront CDN.
+- Biaya operasional mendekati **$0 (masuk AWS Free Tier)** tanpa subscription Vercel Pro.
+- Export gambar kartu persona berjalan 100% di client-side browser menggunakan `html-to-image` (zero serverless image execution fee).
+
+### Langkah Deploy ke AWS:
+1. Jalankan template CloudFormation di folder `deploy/cloudformation.yaml` via AWS Console atau CLI untuk membuat S3 Bucket + CloudFront OAC.
+2. Deploy artefak menggunakan script:
+   ```bash
+   ./deploy/deploy-s3.sh <nama-s3-bucket> <distribution-id>
+   ```
+
 ## 📦 Getting Started
 
 ```bash

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { QuizConfig } from '@/types/quiz';
 import { Sparkles, ArrowRight, CheckCircle2, RotateCcw, Share2, Download, Building2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { toPng } from 'html-to-image';
 
 interface QuizRunnerProps {
   config: QuizConfig;
@@ -18,6 +19,8 @@ export function QuizRunner({ config }: QuizRunnerProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [resultTrait, setResultTrait] = useState<string>('R');
   const [leadInfo, setLeadInfo] = useState({ name: '', email: '' });
+  const [isExporting, setIsExporting] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const totalQuestions = config.questions.length;
   const currentQ = config.questions[currentQuestionIndex];
@@ -89,6 +92,26 @@ export function QuizRunner({ config }: QuizRunnerProps) {
   const handleLeadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     triggerCalculationScreen(resultTrait);
+  };
+
+  const handleDownloadCard = async () => {
+    if (!cardRef.current) return;
+    try {
+      setIsExporting(true);
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 2, // Retain high density
+      });
+      const link = document.createElement('a');
+      link.download = `${config.brand.brandId}-persona-${resultTrait}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to export card image', err);
+      alert('Gagal mengunduh kartu. Silakan screenshot layar ini.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const activeResult = config.results[resultTrait] || config.results['R'];
@@ -270,7 +293,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         {gameState === 'result' && activeResult && (
           <div className="space-y-6 py-4 animate-in zoom-in-95 duration-500">
             {/* Downloadable / Shareable Bento Card Preview */}
-            <div className="relative rounded-3xl p-6 sm:p-7 border border-zinc-800 bg-[#121316] shadow-2xl overflow-hidden space-y-5">
+            <div 
+              ref={cardRef}
+              className="relative rounded-3xl p-6 sm:p-7 border border-zinc-800 bg-[#121316] shadow-2xl overflow-hidden space-y-5"
+            >
               {/* Top Card Badge */}
               <div className="flex items-center justify-between">
                 <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${activeResult.colorTheme.bgBadge}`}>
@@ -339,24 +365,33 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 {config.brand.ctaText}
               </a>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={handleDownloadCard}
+                  disabled={isExporting}
+                  className="py-3 px-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+                >
+                  <Download className="h-4 w-4" />
+                  {isExporting ? 'Proses...' : 'Unduh HD'}
+                </button>
+
                 <button
                   onClick={() => {
                     navigator.clipboard?.writeText(window.location.href);
                     alert('Link kuis berhasil disalin!');
                   }}
-                  className="py-3 px-4 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
+                  className="py-3 px-3 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
                   <Share2 className="h-4 w-4" />
-                  Bagikan Link
+                  Salin Link
                 </button>
 
                 <button
                   onClick={handleStart}
-                  className="py-3 px-4 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
+                  className="py-3 px-3 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
                   <RotateCcw className="h-4 w-4" />
-                  Ulangi Tes
+                  Ulangi
                 </button>
               </div>
             </div>
