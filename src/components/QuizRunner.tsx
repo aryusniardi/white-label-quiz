@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { QuizConfig } from '@/types/quiz';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
-import { ScenarioPixelArt, PersonaPixelBadge } from '@/components/ScenarioPixelArt';
-import { RadarChart } from '@/components/RadarChart';
+import { PixelSceneVillage } from './PixelSceneVillage';
+import { RadarChart } from './RadarChart';
 
 interface QuizRunnerProps {
   config: QuizConfig;
@@ -14,220 +14,203 @@ interface QuizRunnerProps {
 export function QuizRunner({ config }: QuizRunnerProps) {
   const [gameState, setGameState] = useState<'intro' | 'playing' | 'calculating' | 'result'>('intro');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [scores, setScores] = useState<Record<string, number>>({ M: 0, F: 0, E: 0, P: 0 });
-  const [resultTrait, setResultTrait] = useState<string>('M');
+  const [resultTrait, setResultTrait] = useState<string>('MJ');
   const [isExporting, setIsExporting] = useState(false);
-  const [statsLogged, setStatsLogged] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  // Sync completion stat to localStorage for Admin Dashboard
-  useEffect(() => {
-    if (gameState === 'result' && !statsLogged) {
-      try {
-        const stored = localStorage.getItem('pulse_quiz_analytics') || '{"completions": 0, "results": {}}';
-        const parsed = JSON.parse(stored);
-        parsed.completions = (parsed.completions || 0) + 1;
-        parsed.results[resultTrait] = (parsed.results[resultTrait] || 0) + 1;
-        parsed.lastUpdated = new Date().toISOString();
-        localStorage.setItem('pulse_quiz_analytics', JSON.stringify(parsed));
-        setStatsLogged(true);
-      } catch (e) {
-        console.error('Error logging analytics', e);
-      }
-    }
-  }, [gameState, statsLogged, resultTrait]);
 
   const totalQuestions = config.questions.length;
   const currentQ = config.questions[currentQuestionIndex];
 
-  const handleSelectOption = (trait: string, optionId: string) => {
-    if (selectedOption) return;
-    setSelectedOption(optionId);
+  const handleStart = () => {
+    setGameState('playing');
+    setCurrentQuestionIndex(0);
+    setScores({});
+    setSelectedOption(null);
+  };
 
-    const nextScores = { ...scores, [trait]: (scores[trait] || 0) + 1 };
-    setScores(nextScores);
+  const handleSelectChoice = (trait: string, choiceId: string) => {
+    if (selectedOption) return;
+    setSelectedOption(choiceId);
+
+    const updatedScores = {
+      ...scores,
+      [trait]: (scores[trait] || 0) + 1,
+    };
+    setScores(updatedScores);
 
     setTimeout(() => {
-      setSelectedOption(null);
       if (currentQuestionIndex + 1 < totalQuestions) {
         setCurrentQuestionIndex((prev) => prev + 1);
+        setSelectedOption(null);
       } else {
-        triggerCalculationScreen(nextScores);
+        // Calculate Top Trait
+        let topTrait = 'MJ';
+        let maxScore = -1;
+        for (const [t, s] of Object.entries(updatedScores)) {
+          if (s > maxScore) {
+            maxScore = s;
+            topTrait = t;
+          }
+        }
+        setResultTrait(topTrait);
+        triggerCalculationScreen(topTrait);
       }
     }, 450);
   };
 
-  const triggerCalculationScreen = (finalScores: Record<string, number>) => {
-    let topTrait = 'M';
-    let maxVal = -1;
-    for (const [t, v] of Object.entries(finalScores)) {
-      if (v > maxVal) {
-        maxVal = v;
-        topTrait = t;
-      }
-    }
-
-    setResultTrait(topTrait);
+  const triggerCalculationScreen = (finalTrait: string) => {
     setGameState('calculating');
-
     setTimeout(() => {
       setGameState('result');
+      // Record completion
+      try {
+        const stored = localStorage.getItem('pulse_quiz_analytics');
+        const data = stored ? JSON.parse(stored) : { completions: 0, results: {} };
+        data.completions = (data.completions || 0) + 1;
+        data.results[finalTrait] = (data.results[finalTrait] || 0) + 1;
+        data.lastUpdated = new Date().toISOString();
+        localStorage.setItem('pulse_quiz_analytics', JSON.stringify(data));
+      } catch (err) {
+        console.error(err);
+      }
+
       confetti({
-        particleCount: 70,
+        particleCount: 50,
         spread: 60,
         origin: { y: 0.6 },
-        colors: ['#F59E0B', '#10B981', '#EC4899', '#6366F1', '#2D2424'],
+        colors: ['#13ab67', '#36B898', '#FEE440', '#FF70A6'],
       });
     }, 1800);
   };
 
-  const handleRestart = () => {
-    setScores({ M: 0, F: 0, E: 0, P: 0 });
-    setCurrentQuestionIndex(0);
-    setSelectedOption(null);
-    setGameState('intro');
-    setStatsLogged(false);
-  };
-
-  const handleShareStory = async () => {
+  const handleNativeShare = async () => {
     if (!cardRef.current) return;
     try {
       setIsExporting(true);
       const dataUrl = await toPng(cardRef.current, {
         cacheBust: true,
-        pixelRatio: 2.5,
-        backgroundColor: '#FFFDF7',
+        pixelRatio: 2,
       });
 
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      const file = new File([blob], `${config.results[resultTrait]?.id || 'quiz'}-result.png`, { type: 'image/png' });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `${config.brandName.toLowerCase()}-persona-card.png`, {
+        type: 'image/png',
+      });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'My Spending Persona 2025',
-          text: `Hasil tes gayaku: ${config.results[resultTrait]?.name}! Coba tes punyamu sekarang:`,
+          title: `Tipe Belanjaku: ${activeResult.name}`,
+          text: `Cek arketipe pengeluaranmu di ${config.title}!`,
         });
       } else {
         const link = document.createElement('a');
-        link.download = `${config.results[resultTrait]?.id || 'quiz'}-result.png`;
+        link.download = `${config.brandName.toLowerCase()}-persona-card.png`;
         link.href = dataUrl;
         link.click();
       }
     } catch (err) {
-      console.error('Error sharing card:', err);
+      console.error(err);
     } finally {
       setIsExporting(false);
     }
   };
 
-  const activeResult = config.results[resultTrait] || config.results['M'];
+  const activeResult = config.results[resultTrait] || config.results['MJ'];
+  const progressPercent = Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100);
 
   return (
-    <div className="min-h-screen bg-[#FFFDF7] text-[#2D2424] flex flex-col items-center justify-start p-4 sm:p-6 font-sans">
-      {/* Top Brand Bar */}
-      <header className="w-full max-w-md flex items-center justify-between py-3 mb-4 border-b-2 border-[#2D2424]">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
-          <h1 className="text-xs font-black tracking-widest uppercase font-mono">{config.brandName}</h1>
-        </div>
-        <a
-          href="/admin"
-          className="text-[10px] font-black uppercase tracking-wider bg-white px-2.5 py-1 rounded border border-[#2D2424] hover:bg-[#FEF3C7] transition-colors"
-        >
-          Admin Portal →
-        </a>
-      </header>
-
-      {/* Main Card Viewport */}
-      <main className="w-full max-w-md flex-1 flex flex-col justify-center">
-        {/* State 1: Intro */}
-        {gameState === 'intro' && (
-          <div className="bg-white rounded-2xl border-3 border-[#2D2424] p-6 shadow-[5px_5px_0px_#2D2424] text-center space-y-6">
-            <div className="inline-block px-3 py-1 bg-[#FEF3C7] border-2 border-[#2D2424] rounded-full text-[11px] font-black tracking-wider uppercase font-mono">
-              2025 CONSUMER COPING RADAR
-            </div>
-
-            <div className="space-y-3">
-              <h2 className="text-3xl font-black tracking-tight leading-tight uppercase font-mono">
-                {config.title}
-              </h2>
-              <p className="text-sm font-semibold text-[#4A5568] leading-relaxed">
-                {config.subtitle}
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#FFFDF7] border-2 border-[#2D2424] rounded-xl text-left space-y-2 text-xs font-bold text-[#4A5568]">
-              <div className="flex items-center gap-2 text-[#2D2424]">
-                <span className="font-mono text-sm">✓</span> 6 Skenario Dilema Riil (Tanggal Tua, FOMO, Sale)
-              </div>
-              <div className="flex items-center gap-2 text-[#2D2424]">
-                <span className="font-mono text-sm">✓</span> 100% Anonim & Zero Friction
-              </div>
-              <div className="flex items-center gap-2 text-[#2D2424]">
-                <span className="font-mono text-sm">✓</span> Hasil Berupa Kartu Persona Siap Share ke IG Story
+    <div className="min-h-screen bg-[#1A1A1A] text-[#272e27] flex flex-col justify-between font-sans">
+      {/* Centered Mobile-First Stage */}
+      <div className="w-full max-w-[440px] mx-auto min-h-screen flex flex-col justify-between bg-white shadow-2xl relative">
+        
+        {/* Main Interactive Container */}
+        <div className="flex-1 flex flex-col">
+          
+          {/* Top Progress Bar (Cake.me 1:1 Capsule Outline) */}
+          <div className="px-5 pt-4 pb-2 bg-[#36B898] border-b-2 border-[#272e27]/20 flex items-center justify-between">
+            <div className="flex-1 mr-3">
+              <div className="h-4 bg-white rounded-full border-2 border-[#272e27] overflow-hidden p-0.5">
+                <div
+                  className="h-full bg-[#13ab67] rounded-full transition-all duration-300"
+                  style={{ width: `${gameState === 'intro' ? 10 : gameState === 'result' ? 100 : progressPercent}%` }}
+                />
               </div>
             </div>
-
-            <button
-              onClick={() => setGameState('playing')}
-              className="w-full py-4 bg-[#FFD482] hover:bg-[#FFC966] text-[#2D2424] font-black text-sm tracking-wider uppercase rounded-xl border-3 border-[#2D2424] shadow-[4px_4px_0px_#2D2424] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#2D2424] transition-all cursor-pointer font-mono"
+            <a
+              href="/admin"
+              className="text-[10px] font-black uppercase bg-[#272e27] text-white px-2 py-1 rounded-full tracking-wider hover:bg-black transition-colors"
             >
-              MULAI TES SEKARANG
-            </button>
+              ADMIN
+            </a>
           </div>
-        )}
 
-        {/* State 2: Playing Question */}
-        {gameState === 'playing' && currentQ && (
-          <div className="space-y-4">
-            {/* Progress Counter */}
-            <div className="flex items-center justify-between text-xs font-black font-mono px-1">
-              <span>PERTANYAAN {currentQuestionIndex + 1} DARI {totalQuestions}</span>
-              <span>{Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100)}%</span>
-            </div>
+          {/* STATE 1: INTRO (Wooden Village Board) */}
+          {gameState === 'intro' && (
+            <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
+              <PixelSceneVillage step={0} />
 
-            <div className="w-full bg-white h-2.5 rounded-full border-2 border-[#2D2424] overflow-hidden">
-              <div
-                className="bg-[#FFD482] h-full transition-all duration-300"
-                style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
-              />
-            </div>
-
-            {/* Question Card */}
-            <div className="bg-white rounded-2xl border-3 border-[#2D2424] p-5 shadow-[5px_5px_0px_#2D2424] space-y-4">
-              <div className="text-[10px] font-black uppercase text-[#718096] tracking-widest font-mono">
-                {currentQ.categoryBadge}
+              <div className="my-6 text-center px-4">
+                <div className="inline-block text-[11px] font-black tracking-widest text-[#13ab67] bg-[#13ab67]/10 px-3 py-1 rounded-full mb-3">
+                  {config.brandName} • CONSUMER RADAR 2025
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-[#272e27] leading-tight mb-2">
+                  {config.title}
+                </h1>
+                <p className="text-xs text-[#555] leading-relaxed">
+                  {config.subtitle}
+                </p>
               </div>
 
-              {/* Scenario Visual Dilemma */}
-              <ScenarioPixelArt sceneCode={currentQ.sceneCode} />
+              {/* Big Cake.me Pill CTA */}
+              <div className="pb-4">
+                <button
+                  onClick={handleStart}
+                  className="w-full py-4 bg-[#272e27] hover:bg-black text-white text-base font-bold rounded-full border-4 border-[#272e27] shadow-[0_4px_0_#111] active:translate-y-1 transition-all"
+                >
+                  Mulai Tes Sekarang!
+                </button>
+              </div>
+            </div>
+          )}
 
-              <h2 className="text-base sm:text-lg font-black leading-snug text-[#2D2424]">
-                {currentQ.question}
-              </h2>
+          {/* STATE 2: PLAYING (Scene Village + Question + 2 Black Pill Options) */}
+          {gameState === 'playing' && currentQ && (
+            <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
+              {/* Top Pixel Scene */}
+              <PixelSceneVillage step={currentQ.index} />
 
-              {/* Options */}
-              <div className="space-y-3 pt-2">
-                {currentQ.choices.map((choice, i) => {
+              {/* Centered Question */}
+              <div className="my-5 text-center px-2">
+                <div className="text-[10px] font-mono font-bold text-[#13ab67] uppercase tracking-wider mb-1">
+                  {currentQ.categoryBadge}
+                </div>
+                <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug">
+                  {currentQ.question}
+                </h2>
+              </div>
+
+              {/* Cake.me Pill Choices (Dark Charcoal Pills with High Contrast White Type) */}
+              <div className="space-y-3 pb-4">
+                {currentQ.choices.map((choice, idx) => {
                   const isSelected = selectedOption === choice.id;
-                  const label = i === 0 ? 'A' : 'B';
                   return (
                     <button
                       key={choice.id}
-                      onClick={() => handleSelectOption(choice.targetTrait, choice.id)}
-                      className={`w-full p-4 text-left rounded-xl border-3 border-[#2D2424] transition-all flex items-start gap-3 cursor-pointer ${
+                      onClick={() => handleSelectChoice(choice.targetTrait, choice.id)}
+                      className={`w-full text-left p-3.5 rounded-full border-2 transition-all flex items-center space-x-3 ${
                         isSelected
-                          ? 'bg-[#FFD482] shadow-[2px_2px_0px_#2D2424] translate-x-0.5 translate-y-0.5'
-                          : 'bg-white hover:bg-[#FFFDF7] shadow-[3px_3px_0px_#2D2424]'
+                          ? 'bg-[#13ab67] border-[#13ab67] text-white scale-[0.98]'
+                          : 'bg-[#272e27] hover:bg-black border-[#272e27] text-white shadow-[0_3px_0_#111] active:translate-y-0.5'
                       }`}
                     >
-                      <span className="w-6 h-6 rounded-lg bg-[#2D2424] text-white flex items-center justify-center text-xs font-black shrink-0 font-mono">
-                        {label}
+                      <span className="w-6 h-6 rounded-full bg-white/20 text-white font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                        {idx === 0 ? 'A' : 'B'}
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-[#2D2424] leading-relaxed">
+                      <span className="text-xs sm:text-sm font-medium leading-tight">
                         {choice.text}
                       </span>
                     </button>
@@ -235,120 +218,116 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 })}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* State 3: Calculating */}
-        {gameState === 'calculating' && (
-          <div className="bg-white rounded-2xl border-3 border-[#2D2424] p-8 shadow-[5px_5px_0px_#2D2424] text-center space-y-4">
-            <div className="w-12 h-12 border-4 border-[#2D2424] border-t-[#FFD482] rounded-full animate-spin mx-auto" />
-            <h3 className="text-lg font-black uppercase font-mono tracking-wider">
-              MEMETA-KAN INDEKS GAYAMU...
-            </h3>
-            <p className="text-xs font-bold text-[#718096]">
-              Mengkalkulasi tingkat ketahanan, dorongan belanja, dan alokasi prioritasmu.
-            </p>
-          </div>
-        )}
+          {/* STATE 3: CALCULATING TRANSITION */}
+          {gameState === 'calculating' && (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#36B898] text-center">
+              <div className="w-16 h-16 bg-white rounded-2xl border-4 border-[#272e27] flex items-center justify-center text-3xl shadow-[4px_4px_0px_#272e27] animate-bounce mb-4">
+                ⚡
+              </div>
+              <h3 className="text-base font-black text-[#272e27] tracking-wider uppercase mb-1">
+                MEMETAKAN PROFIL BELANJAMU...
+              </h3>
+              <p className="text-xs text-white/90">
+                Mengkalkulasi indeks komparasi 2025
+              </p>
+            </div>
+          )}
 
-        {/* State 4: Result Story Card */}
-        {gameState === 'result' && activeResult && (
-          <div className="space-y-4 py-2">
-            {/* 9:16 Shareable Trophy Card */}
-            <div
-              ref={cardRef}
-              className="bg-[#FFFDF7] rounded-3xl border-3 border-[#2D2424] p-5 shadow-[6px_6px_0px_#2D2424] space-y-4"
-            >
-              {/* Header Box */}
+          {/* STATE 4: RESULT (High-Density 9:16 Persona Card) */}
+          {gameState === 'result' && activeResult && (
+            <div className="flex-1 p-4 bg-[#F8F9FA] overflow-y-auto">
+              {/* Persona Story Card */}
               <div
-                className="p-4 rounded-2xl border-2 border-[#2D2424] text-center space-y-1"
-                style={{ backgroundColor: activeResult.headerBg }}
+                ref={cardRef}
+                className="bg-[#FFFDF7] border-4 border-[#272e27] rounded-2xl p-4 shadow-[6px_6px_0px_#272e27] mb-4 text-[#272e27]"
               >
-                <div className="text-[10px] font-black uppercase tracking-widest text-[#718096] font-mono">
-                  {config.brandName} • 2025 CONSUMER RADAR
+                {/* Header Subtitle */}
+                <div className="flex items-center justify-between border-b-2 border-[#272e27]/20 pb-2 mb-3">
+                  <span className="text-[9px] font-black tracking-widest text-[#13ab67] uppercase">
+                    {config.brandName} • 2025 CONSUMER RADAR
+                  </span>
+                  <span className="text-[9px] font-mono font-bold bg-[#272e27] text-white px-1.5 py-0.5 rounded">
+                    BURNOUT: {activeResult.stressCopingIndex}
+                  </span>
                 </div>
-                <div className="flex justify-center my-2">
-                  <PersonaPixelBadge trait={resultTrait} size={90} />
+
+                {/* Character Badge & Title */}
+                <div className="text-center my-2">
+                  <div className="text-4xl mb-1">{activeResult.badge}</div>
+                  <h2 className="text-base sm:text-lg font-black uppercase text-[#272e27] tracking-tight">
+                    {activeResult.name}
+                  </h2>
+                  <p className="text-[11px] font-bold text-[#13ab67] mt-0.5">
+                    {activeResult.tagline}
+                  </p>
                 </div>
-                <div className="text-xl font-black text-[#2D2424] tracking-tight uppercase font-mono">
-                  {activeResult.name}
+
+                {/* Radar Chart 6 Sisi */}
+                <div className="my-3 py-1 bg-white/70 border-2 border-[#272e27]/15 rounded-xl">
+                  <RadarChart stats={activeResult.dimensions} />
                 </div>
-                <div className="inline-block px-2.5 py-0.5 bg-white border border-[#2D2424] rounded-full text-[10px] font-black uppercase tracking-wider text-[#2D2424] font-mono">
-                  {activeResult.badge}
+
+                {/* Persona Attributes Breakdown */}
+                <div className="space-y-2 text-xs">
+                  <div className="bg-[#FAEDCD] p-2.5 rounded-lg border-2 border-[#272e27]/20">
+                    <span className="font-bold text-[10px] block text-[#6b4226] uppercase">TRIGGER BELANJA:</span>
+                    <span className="text-[11px] font-semibold">{activeResult.spendingTrigger}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
+                    <div className="bg-[#E9F5ED] p-2 rounded-lg border-2 border-[#13ab67]/30">
+                      <div className="text-[9px] font-black text-[#13ab67] uppercase">CIRCLE COCOK</div>
+                      <div className="font-bold mt-0.5">{activeResult.compatiblePartner}</div>
+                    </div>
+                    <div className="bg-[#FDE8E8] p-2 rounded-lg border-2 border-[#E63946]/30">
+                      <div className="text-[9px] font-black text-[#E63946] uppercase">POTENSI BENTROK</div>
+                      <div className="font-bold mt-0.5">{activeResult.clashingPartner}</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-2.5 rounded-lg border-2 border-[#272e27]/15 text-[10px] leading-relaxed text-[#444]">
+                    <span className="font-black text-[#272e27]">SARAN SURVIVAL: </span>
+                    {activeResult.actionAdvice}
+                  </div>
+                </div>
+
+                {/* Footer Watermark */}
+                <div className="mt-3 pt-2 border-t-2 border-[#272e27]/15 text-center text-[9px] font-mono text-[#888]">
+                  VERIFIED ZERO-PARTY DATA • PULSE INSIGHTS LAB
                 </div>
               </div>
 
-              {/* Tagline Box */}
-              <div className="bg-white p-3 rounded-xl border-2 border-[#2D2424] text-center">
-                <p className="text-xs font-bold italic text-[#2D2424] leading-snug">
-                  &ldquo;{activeResult.tagline}&rdquo;
-                </p>
-              </div>
-
-              {/* Hexagonal Radar Chart */}
-              <div className="bg-white p-3 rounded-2xl border-2 border-[#2D2424]">
-                <div className="text-[10px] font-black uppercase text-[#718096] tracking-wider mb-1 text-center font-mono">
-                  RADAR 6 SISI TREN FINANSIAL
-                </div>
-                <RadarChart stats={activeResult.dimensions} />
-              </div>
-
-              {/* Key Indicators Grid */}
-              <div className="grid grid-cols-2 gap-2 text-left">
-                <div className="bg-white p-2.5 rounded-xl border-2 border-[#2D2424]">
-                  <div className="text-[9px] font-black uppercase text-[#718096] font-mono">BURNOUT INDEX</div>
-                  <div className="text-xs font-black text-[#2D2424] mt-0.5">{activeResult.stressCopingIndex}</div>
-                </div>
-                <div className="bg-white p-2.5 rounded-xl border-2 border-[#2D2424]">
-                  <div className="text-[9px] font-black uppercase text-[#718096] font-mono">TRIGGER BELANJA</div>
-                  <div className="text-xs font-black text-[#2D2424] mt-0.5 truncate">{activeResult.spendingTrigger}</div>
-                </div>
-              </div>
-
-              {/* Work Besties vs Clashing */}
-              <div className="grid grid-cols-2 gap-2 text-left">
-                <div className="bg-[#D1FAE5] p-2.5 rounded-xl border-2 border-[#2D2424]">
-                  <div className="text-[9px] font-black uppercase text-[#065F46] font-mono">CIRCLE COCOK</div>
-                  <div className="text-xs font-black text-[#065F46] mt-0.5">{activeResult.compatiblePartner}</div>
-                </div>
-                <div className="bg-[#FEE2E2] p-2.5 rounded-xl border-2 border-[#2D2424]">
-                  <div className="text-[9px] font-black uppercase text-[#991B1B] font-mono">POTENSI BENTROK</div>
-                  <div className="text-xs font-black text-[#991B1B] mt-0.5">{activeResult.clashingPartner}</div>
-                </div>
-              </div>
-
-              {/* Action Advice Box */}
-              <div className="bg-white p-3 rounded-xl border-2 border-[#2D2424] text-xs font-semibold text-[#4A5568] leading-relaxed">
-                <span className="font-black text-[#2D2424] font-mono block mb-0.5">💡 SARAN UNTUKMU:</span>
-                {activeResult.actionAdvice}
-              </div>
-
-              {/* Watermark Footer */}
-              <div className="text-center text-[9px] font-black text-[#A0AEC0] uppercase tracking-widest font-mono pt-1">
-                SCREENSHOT & SHARE KE INSTAGRAM STORY
+              {/* Action Buttons */}
+              <div className="space-y-2 pb-2">
+                <button
+                  onClick={handleNativeShare}
+                  disabled={isExporting}
+                  className="w-full py-3.5 bg-[#FEE440] hover:bg-[#fedd1c] text-[#272e27] text-sm font-black rounded-full border-3 border-[#272e27] shadow-[0_4px_0_#272e27] active:translate-y-0.5 transition-all"
+                >
+                  {isExporting ? 'MENYIAPKAN GAMBAR...' : 'SHARE STORY / SIMPAN KE GALERI'}
+                </button>
+                <button
+                  onClick={handleStart}
+                  className="w-full py-2.5 bg-white hover:bg-gray-100 text-[#272e27] text-xs font-bold rounded-full border-2 border-[#272e27] transition-all"
+                >
+                  ULANGI TES
+                </button>
               </div>
             </div>
+          )}
 
-            {/* Action Buttons */}
-            <div className="space-y-2">
-              <button
-                onClick={handleShareStory}
-                disabled={isExporting}
-                className="w-full py-4 bg-[#FFD482] hover:bg-[#FFC966] text-[#2D2424] font-black text-sm tracking-wider uppercase rounded-xl border-3 border-[#2D2424] shadow-[4px_4px_0px_#2D2424] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer font-mono"
-              >
-                {isExporting ? 'MEMPROSES KARTU...' : 'SHARE STORY / SIMPAN KE GALERI'}
-              </button>
+        </div>
 
-              <button
-                onClick={handleRestart}
-                className="w-full py-3 bg-white hover:bg-[#FFFDF7] text-[#2D2424] font-black text-xs tracking-wider uppercase rounded-xl border-2 border-[#2D2424] cursor-pointer font-mono"
-              >
-                ULANGI ASESMEN
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
+        {/* Persistent OOOPEN Lab Style Footer Banner */}
+        <div className="w-full bg-[#111] py-2 px-4 text-center border-t border-black/40">
+          <span className="text-[10px] text-white/70 font-mono tracking-wider">
+            Powered by <strong className="text-white underline">Pulse Engine</strong>
+          </span>
+        </div>
+
+      </div>
     </div>
   );
 }

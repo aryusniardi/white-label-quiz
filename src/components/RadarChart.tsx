@@ -12,11 +12,12 @@ interface RadarChartProps {
 }
 
 export function RadarChart({ stats }: RadarChartProps) {
-  const size = 260;
+  const size = 180;
   const center = size / 2;
-  const radius = 80;
+  const radius = 62;
 
-  const axes = [
+  // 6 dimensions
+  const labels = [
     { label: 'SPONTAN', key: 'impulse' },
     { label: 'DISIPLIN', key: 'discipline' },
     { label: 'MEMORI', key: 'experience' },
@@ -25,43 +26,45 @@ export function RadarChart({ stats }: RadarChartProps) {
     { label: 'RESILIENSI', key: 'resilience' },
   ];
 
-  const angleStep = (Math.PI * 2) / axes.length;
+  const angleStep = (Math.PI * 2) / labels.length;
 
-  const points = axes.map((axis, i) => {
+  const points = labels.map((dim, i) => {
     const angle = i * angleStep - Math.PI / 2;
-    const value = (stats[axis.key as keyof typeof stats] || 3) / 5;
+    const value = (stats[dim.key as keyof typeof stats] || 50) / 100;
     const r = radius * value;
     const x = center + r * Math.cos(angle);
     const y = center + r * Math.sin(angle);
-    return `${x},${y}`;
-  }).join(' ');
+    return { x, y };
+  });
 
-  const rings = [0.25, 0.5, 0.75, 1];
+  const polygonPoints = points.map((p) => `${p.x},${p.y}`).join(' ');
 
   return (
-    <div className="w-full flex flex-col items-center justify-center py-2">
+    <div className="flex flex-col items-center justify-center">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible">
-        {rings.map((ring, idx) => {
-          const ringPoints = axes.map((_, i) => {
-            const angle = i * angleStep - Math.PI / 2;
-            const r = radius * ring;
-            const x = center + r * Math.cos(angle);
-            const y = center + r * Math.sin(angle);
-            return `${x},${y}`;
-          }).join(' ');
-
+        {/* Background Grids */}
+        {[0.33, 0.66, 1].map((scale, idx) => {
+          const gridPoints = labels
+            .map((_, i) => {
+              const angle = i * angleStep - Math.PI / 2;
+              const r = radius * scale;
+              return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
+            })
+            .join(' ');
           return (
             <polygon
               key={idx}
-              points={ringPoints}
-              fill="none"
-              stroke="#E2E8F0"
+              points={gridPoints}
+              fill={idx === 2 ? '#FAEDCD' : 'transparent'}
+              stroke="#D4A373"
               strokeWidth="1.5"
+              strokeDasharray={idx < 2 ? '2,2' : 'none'}
             />
           );
         })}
 
-        {axes.map((_, i) => {
+        {/* Spokes */}
+        {labels.map((_, i) => {
           const angle = i * angleStep - Math.PI / 2;
           const x = center + radius * Math.cos(angle);
           const y = center + radius * Math.sin(angle);
@@ -72,38 +75,40 @@ export function RadarChart({ stats }: RadarChartProps) {
               y1={center}
               x2={x}
               y2={y}
-              stroke="#CBD5E1"
+              stroke="#D4A373"
               strokeWidth="1"
-              strokeDasharray="2 2"
             />
           );
         })}
 
+        {/* Data polygon with pastel green & hard stroke */}
         <polygon
-          points={points}
-          fill="rgba(245, 158, 11, 0.25)"
-          stroke="#2D2424"
+          points={polygonPoints}
+          fill="rgba(19, 171, 103, 0.45)"
+          stroke="#13ab67"
           strokeWidth="3"
         />
 
-        {axes.map((axis, i) => {
-          const angle = i * angleStep - Math.PI / 2;
-          const labelDist = radius + 24;
-          const lx = center + labelDist * Math.cos(angle);
-          const ly = center + labelDist * Math.sin(angle);
+        {/* Data dots */}
+        {points.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#272e27" />
+        ))}
 
+        {/* Labels */}
+        {labels.map((dim, i) => {
+          const angle = i * angleStep - Math.PI / 2;
+          const labelRadius = radius + 18;
+          const lx = center + labelRadius * Math.cos(angle);
+          const ly = center + labelRadius * Math.sin(angle);
           return (
             <text
               key={i}
               x={lx}
-              y={ly + 4}
-              fontSize="10"
-              fontWeight="900"
-              fill="#2D2424"
+              y={ly + 3}
               textAnchor="middle"
-              className="tracking-wider uppercase select-none font-mono"
+              className="text-[8px] font-black fill-[#272e27] tracking-wider font-mono"
             >
-              {axis.label}
+              {dim.label}
             </text>
           );
         })}
