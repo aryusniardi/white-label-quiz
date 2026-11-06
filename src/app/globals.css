@@ -1,74 +1,60 @@
 @import "tailwindcss";
 
-:root {
-  --background: #000000;
-  --foreground: #F5F5F7;
-  --card-bg: #111113;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-rim: rgba(255, 255, 255, 0.14);
+@layer base {
+  :root {
+    --bg-main: #FFFDF7;
+    --card-bg: #FFFFFF;
+    --border-color: #2D2424;
+    --shadow-color: #2D2424;
+    --primary-pastel: #FFD482;
+    --secondary-pastel: #BCE3C5;
+    --accent-pink: #FFAAA6;
+  }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Playful Neo-Brutalist Utility Classes */
+.fun-border {
+  border: 3px solid #2D2424;
 }
 
-body {
-  background-color: #000000;
-  color: #F5F5F7;
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  letter-spacing: -0.015em;
-  -webkit-font-smoothing: antialiased;
+.fun-border-sm {
+  border: 2px solid #2D2424;
 }
 
-/* Apple Pro Dark Bento Tokens & Highlights */
-.bento-card {
-  background: #111113;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+.fun-shadow {
+  box-shadow: 4px 4px 0px #2D2424;
 }
 
-.bento-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22) 30%, rgba(255, 255, 255, 0.22) 70%, transparent);
-  pointer-events: none;
+.fun-shadow-lg {
+  box-shadow: 6px 6px 0px #2D2424;
 }
 
-/* Glass Pill Header */
-.glass-pill {
-  background: rgba(17, 17, 19, 0.75);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 36px rgba(0, 0, 0, 0.6);
+.fun-shadow-xl {
+  box-shadow: 8px 8px 0px #2D2424;
 }
 
-/* Choice card */
-.choice-pill {
-  background: #141416;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  position: relative;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.fun-btn {
+  border: 3px solid #2D2424;
+  box-shadow: 4px 4px 0px #2D2424;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.choice-pill:hover {
-  background: #1A1A1D;
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+.fun-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #2D2424;
 }
 
-.choice-pill:active {
-  transform: scale(0.98);
+.fun-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #2D2424;
+}
+
+/* Pixel / Playful background patterns */
+.pixel-grid-bg {
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(#2D2424 1px, transparent 1px),
+    radial-gradient(#2D2424 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
 }
