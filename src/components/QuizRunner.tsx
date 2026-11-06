@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { QuizConfig } from '@/types/quiz';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
-import { CleanScenarioVisual } from './CleanScenarioVisual';
-import { RadarChart } from './RadarChart';
+import { ScenarioPixelArt, PersonaPixelBadge } from '@/components/ScenarioPixelArt';
+import { RadarChart } from '@/components/RadarChart';
 
 interface QuizRunnerProps {
   config: QuizConfig;
@@ -203,7 +203,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               </div>
 
               {/* Scenario Visual Dilemma */}
-              <CleanScenarioVisual sceneCode={currentQ.sceneCode} />
+              <ScenarioPixelArt sceneCode={currentQ.sceneCode} />
 
               <h2 className="text-base sm:text-lg font-black leading-snug text-[#2D2424]">
                 {currentQ.question}
@@ -266,6 +266,9 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               >
                 <div className="text-[10px] font-black uppercase tracking-widest text-[#718096] font-mono">
                   {config.brandName} • 2025 CONSUMER RADAR
+                </div>
+                <div className="flex justify-center my-2">
+                  <PersonaPixelBadge trait={resultTrait} size={90} />
                 </div>
                 <div className="text-xl font-black text-[#2D2424] tracking-tight uppercase font-mono">
                   {activeResult.name}

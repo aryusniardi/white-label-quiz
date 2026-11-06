@@ -14,7 +14,7 @@ env['PATH'] = os.environ.get('PATH', '/usr/local/bin:/usr/bin:/bin')
 token = env.get('GITHUB_TOKEN')
 
 subprocess.run(['git', 'add', '.'], cwd='/home/ubuntu/white-label-quiz', env=env, check=True)
-subprocess.run(['git', 'commit', '-m', 'feat: clean consumer spending quiz, clean dilemma layout, and live admin response dashboard'], cwd='/home/ubuntu/white-label-quiz', env=env, check=True)
+subprocess.run(['git', 'commit', '-m', 'feat: fun retro pixel art dilemas and animated persona badges for 2025 consumer index'], cwd='/home/ubuntu/white-label-quiz', env=env, check=True)
 
 remote_url = f"https://aryusniardi:{token}@github.com/aryusniardi/white-label-quiz.git"
 subprocess.run(['git', 'remote', 'set-url', 'origin', remote_url], cwd='/home/ubuntu/white-label-quiz', env=env, check=True)
