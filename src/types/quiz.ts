@@ -10,7 +10,7 @@ export interface QuizQuestion {
   categoryBadge: string;
   scenarioTitle: string;
   question: string;
-  sceneCode: 'burnout' | 'hangout' | 'sale' | 'thr' | 'local' | 'reward';
+  imageSrc: string;
   choices: QuizChoice[];
 }
 
@@ -22,6 +22,7 @@ export interface QuizResult {
   badge: string;
   accentColor: string;
   headerBg: string;
+  badgeImage?: string;
   traits: string[];
   description: string;
   dimensions: {

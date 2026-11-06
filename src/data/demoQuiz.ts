@@ -12,7 +12,7 @@ export const consumerQuizConfig: QuizConfig = {
       categoryBadge: 'LEVEL 1: TANGGAL TUA',
       scenarioTitle: 'Dilema Sisa Saldo Rp 80.000 vs Burnout',
       question: 'Sisa saldo di rekening tinggal Rp 80.000, tapi hari ini deadline kerjaan bikin burnout parah. Apa langkahmu?',
-      sceneCode: 'burnout',
+      imageSrc: '/images/pixel/scene_1_burnout.png',
       choices: [
         {
           id: 'q1_a',
@@ -32,7 +32,7 @@ export const consumerQuizConfig: QuizConfig = {
       categoryBadge: 'LEVEL 2: SOCIAL LIFE',
       scenarioTitle: 'Ajakan Nongkrong Cafe Estetik',
       question: 'Circle pertemanan ngajak bukber / nongkrong di cafe estetik yang habisnya minimal 150rb. Sikapmu?',
-      sceneCode: 'hangout',
+      imageSrc: '/images/pixel/scene_2_social.png',
       choices: [
         {
           id: 'q2_a',
@@ -52,7 +52,7 @@ export const consumerQuizConfig: QuizConfig = {
       categoryBadge: 'LEVEL 3: SHOPPING CART',
       scenarioTitle: 'Notifikasi Midnight Sale 00:00',
       question: 'Barang impian di keranjang e-commerce tiba-tiba diskon kilat 40% cuma 1 jam saat tengah malam. Reaksimu?',
-      sceneCode: 'sale',
+      imageSrc: '/images/pixel/scene_3_shopping.png',
       choices: [
         {
           id: 'q3_a',
@@ -72,7 +72,7 @@ export const consumerQuizConfig: QuizConfig = {
       categoryBadge: 'LEVEL 4: ALOKASI REZEKI',
       scenarioTitle: 'Uang THR & Bonus Akhir Tahun Cair',
       question: 'Uang THR / bonus proyek akhirnya mendarat penuh di rekening. Keputusan pertamamu?',
-      sceneCode: 'thr',
+      imageSrc: '/images/pixel/scene_4_wealth.png',
       choices: [
         {
           id: 'q4_a',
@@ -92,7 +92,7 @@ export const consumerQuizConfig: QuizConfig = {
       categoryBadge: 'LEVEL 5: PREFERENSI BRAND',
       scenarioTitle: 'Memilih Sepatu Harian Baru',
       question: 'Perlu sepatu sneaker harian yang nyaman. Ada brand lokal 350rb vs brand global ternama 2,2jt. Pilihanmu?',
-      sceneCode: 'local',
+      imageSrc: '/images/pixel/scene_5_brand.png',
       choices: [
         {
           id: 'q5_a',
@@ -112,7 +112,7 @@ export const consumerQuizConfig: QuizConfig = {
       categoryBadge: 'LEVEL 6: REWARD AKHIR PEKAN',
       scenarioTitle: 'Jumat Malam Jam Pulang Kantor',
       question: 'Akhir pekan tiba setelah seminggu penuh meeting melelahkan. Bentuk self-reward versimu?',
-      sceneCode: 'reward',
+      imageSrc: '/images/pixel/scene_6_reward.png',
       choices: [
         {
           id: 'q6_a',
@@ -136,6 +136,7 @@ export const consumerQuizConfig: QuizConfig = {
       badge: 'BENSIN EMOSIONAL',
       accentColor: '#F59E0B',
       headerBg: '#FEF3C7',
+      badgeImage: '/images/pixel/badge_microjoy.png',
       traits: ['#SelfLoveFirst', '#CopingByCoffee', '#EmotionalSpender', '#DoomSpender'],
       description: 'Kamu bukan orang yang boros tanpa arah, tapi kamu percaya bahwa kewarasan mental butuh bensin harian. Bagi kamu, kopi susu aren, pastry enak, atau jajan receh di minimarket adalah investasi bertahan hidup di tengah kepenatan dunia.',
       dimensions: {

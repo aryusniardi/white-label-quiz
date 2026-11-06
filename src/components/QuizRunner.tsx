@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { QuizConfig } from '@/types/quiz';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
-import { PixelSceneVillage } from './PixelSceneVillage';
 import { RadarChart } from './RadarChart';
 
 interface QuizRunnerProps {
@@ -16,7 +16,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [resultTrait, setResultTrait] = useState<string>('MJ');
+  const [resultTrait, setResultTrait] = useState<string>('M');
   const [isExporting, setIsExporting] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +46,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         setSelectedOption(null);
       } else {
         // Calculate Top Trait
-        let topTrait = 'MJ';
+        let topTrait = 'M';
         let maxScore = -1;
         for (const [t, s] of Object.entries(updatedScores)) {
           if (s > maxScore) {
@@ -142,10 +142,27 @@ export function QuizRunner({ config }: QuizRunnerProps) {
             </div>
           </div>
 
-          {/* STATE 1: INTRO (Wooden Village Board) */}
+          {/* STATE 1: INTRO (Pixel Art Hero Showcase) */}
           {gameState === 'intro' && (
             <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
-              <PixelSceneVillage step={0} />
+              <div className="relative w-full h-[220px] rounded-2xl overflow-hidden border-2 border-[#272e27]/20 shadow-inner bg-emerald-950">
+                <Image
+                  src="/images/pixel/scene_1_burnout.png"
+                  alt="2025 Consumer Dilemma"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <span className="bg-[#13ab67] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">
+                    AUTHENTIC PIXEL ART
+                  </span>
+                  <p className="text-xs font-bold drop-shadow mt-1">
+                    Visual di-generate via Google Gemini Pixel Engine
+                  </p>
+                </div>
+              </div>
 
               <div className="my-6 text-center px-4">
                 <div className="inline-block text-[11px] font-black tracking-widest text-[#13ab67] bg-[#13ab67]/10 px-3 py-1 rounded-full mb-3">
@@ -174,8 +191,19 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           {/* STATE 2: PLAYING (Scene Village + Question + 2 Black Pill Options) */}
           {gameState === 'playing' && currentQ && (
             <div className="flex-1 flex flex-col justify-between p-4 bg-[#F8F9FA]">
-              {/* Top Pixel Scene */}
-              <PixelSceneVillage step={currentQ.index} />
+              {/* Top Pixel Scene Image */}
+              <div className="relative w-full h-[210px] rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[0_4px_0_#272e27] bg-[#272e27]">
+                <Image
+                  src={currentQ.imageSrc}
+                  alt={currentQ.scenarioTitle}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute bottom-2 left-2 bg-[#272e27]/85 backdrop-blur-sm text-white px-2 py-1 rounded text-[10px] font-mono font-bold">
+                  {currentQ.scenarioTitle}
+                </div>
+              </div>
 
               {/* Centered Question */}
               <div className="my-5 text-center px-2">
@@ -249,7 +277,18 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
                 {/* Character Badge & Title */}
                 <div className="text-center my-2">
-                  <div className="text-4xl mb-1">{activeResult.badge}</div>
+                  {activeResult.badgeImage ? (
+                    <div className="relative w-20 h-20 mx-auto mb-2 rounded-xl overflow-hidden border-2 border-[#272e27] shadow-[2px_2px_0px_#272e27]">
+                      <Image
+                        src={activeResult.badgeImage}
+                        alt={activeResult.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-4xl mb-1">{activeResult.badge}</div>
+                  )}
                   <h2 className="text-base sm:text-lg font-black uppercase text-[#272e27] tracking-tight">
                     {activeResult.name}
                   </h2>
