@@ -9,8 +9,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "What Kind of Spender & Survivor Are You? 💳 Consumer Insight Index",
-  description: "Temukan arketipe finansial, coping mechanism, dan gaya belanjamu.",
+  title: "What Cake R U? 🍰 Viral Career Archetype Quiz",
+  description: "Jelajahi Desa Pencari Kerja dan temukan kue kepribadian kerjamu!",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

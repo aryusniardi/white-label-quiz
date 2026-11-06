@@ -10,25 +10,40 @@ export interface QuizQuestion {
   categoryBadge: string;
   scenarioTitle: string;
   question: string;
-  illustrationKey: string;
+  sceneType: number;
   choices: QuizChoice[];
 }
 
-export interface TraitResult {
-  traitCode: string;
-  archetypeName: string;
-  tagline: string;
-  personaAvatarSvg: string;
-  dominantTrait: string;
-  secondaryTrait: string;
-  stressCopingMechanism: string;
-  spendingTrigger: string;
-  frugalHacks: string;
-  idealBrandVibe: string;
-  financialVibeIndex: number;
-  bestieArchetype: string;
-  clashArchetype: string;
-  actionGuidance: string;
+export interface QuizResult {
+  id: string;
+  name: string;
+  roleBadge: string;
+  spriteType: 'layer' | 'cupcake' | 'macaron' | 'strawberry' | 'tiramisu' | 'roll';
+  cardColor: string;
+  headerBg: string;
+  hashtags: string[];
+  description: string;
+  spiderStats: {
+    actionOriented: number;
+    problemSolving: number;
+    innovation: number;
+    teamwork: number;
+    influence: number;
+    attentionToDetail: number;
+  };
+  workaholismIndex: string;
+  luckyCharm: string;
+  workBesties: string;
+  justCoworkers: string;
+  recommendedRoles: string[];
+}
+
+export interface ThemeConfig {
+  bgColor: string;
+  cardBg: string;
+  primaryColor: string;
+  borderColor: string;
+  borderRadius: string;
 }
 
 export interface QuizConfig {
@@ -36,15 +51,7 @@ export interface QuizConfig {
   title: string;
   subtitle: string;
   brandName: string;
-  theme: {
-    bgPage: string;
-    cardBg: string;
-    primaryButton: string;
-    buttonText: string;
-    accentColor: string;
-    borderColor: string;
-    borderRadius: number;
-  };
+  theme: ThemeConfig;
   questions: QuizQuestion[];
-  results: Record<string, TraitResult>;
+  results: Record<string, QuizResult>;
 }

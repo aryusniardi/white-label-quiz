@@ -4,78 +4,75 @@ import React, { useState, useRef } from 'react';
 import { QuizConfig } from '@/types/quiz';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
-import { QuestionIllustration } from '@/components/Illustration';
+import { PixelCharacter, PixelScene } from './PixelSprites';
+import { RadarChart } from './RadarChart';
 
 interface QuizRunnerProps {
   initialConfig: QuizConfig;
 }
 
 export function QuizRunner({ initialConfig }: QuizRunnerProps) {
-  const [config] = useState<QuizConfig>(initialConfig);
   const [gameState, setGameState] = useState<'intro' | 'playing' | 'calculating' | 'result'>('intro');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [scores, setScores] = useState<Record<string, number>>({});
+  const [scores, setScores] = useState<Record<string, number>>({
+    R: 0,
+    I: 0,
+    A: 0,
+    S: 0,
+    E: 0,
+    C: 0,
+  });
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [resultTrait, setResultTrait] = useState<string>('MJ');
+  const [resultTrait, setResultTrait] = useState<string>('R');
   const [isExporting, setIsExporting] = useState(false);
-  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const totalQuestions = config.questions.length;
-  const currentQ = config.questions[currentQuestionIndex];
+  const totalQuestions = initialConfig.questions.length;
+  const currentQ = initialConfig.questions[currentQuestionIndex];
 
   const handleStart = () => {
-    setGameState('playing');
+    setScores({ R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 });
     setCurrentQuestionIndex(0);
-    setScores({});
-    setSelectedOption(null);
+    setGameState('playing');
   };
 
-  const handleAnswer = (choiceId: string, trait: string) => {
+  const handleChoice = (targetTrait: string, choiceId: string) => {
     setSelectedOption(choiceId);
     const updatedScores = {
       ...scores,
-      [trait]: (scores[trait] || 0) + 1,
+      [targetTrait]: (scores[targetTrait] || 0) + 1,
     };
     setScores(updatedScores);
 
     setTimeout(() => {
       setSelectedOption(null);
-      if (currentQuestionIndex + 1 < totalQuestions) {
+      if (currentQuestionIndex < totalQuestions - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
       } else {
-        calculateAndShowResult(updatedScores);
+        // Calculate winner
+        let highestScore = -1;
+        let winningTrait = 'R';
+        for (const [trait, val] of Object.entries(updatedScores)) {
+          if (val > highestScore) {
+            highestScore = val;
+            winningTrait = trait;
+          }
+        }
+        setResultTrait(winningTrait);
+        setGameState('calculating');
+        setTimeout(() => {
+          setGameState('result');
+          try {
+            confetti({
+              particleCount: 50,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#FFD482', '#FEB2B2', '#9AE6B4', '#D6BCFA'],
+            });
+          } catch {}
+        }, 1400);
       }
-    }, 380);
-  };
-
-  const calculateAndShowResult = (finalScores: Record<string, number>) => {
-    setGameState('calculating');
-
-    let highestTrait = 'MJ';
-    let maxScore = -1;
-    for (const [trait, score] of Object.entries(finalScores)) {
-      if (score > maxScore) {
-        maxScore = score;
-        highestTrait = trait;
-      }
-    }
-
-    setResultTrait(highestTrait);
-
-    setTimeout(() => {
-      setGameState('result');
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#F59E0B', '#10B981', '#3B82F6', '#EF4444'],
-        });
-      } catch {
-        // Safe confetti fallback
-      }
-    }, 1800);
+    }, 320);
   };
 
   const handleShareStory = async () => {
@@ -85,262 +82,285 @@ export function QuizRunner({ initialConfig }: QuizRunnerProps) {
       const dataUrl = await toPng(cardRef.current, {
         cacheBust: true,
         pixelRatio: 2.5,
+        backgroundColor: '#FFFDF7',
       });
 
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], `${config.brandName}-Result-Card.png`, { type: 'image/png' });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `${initialConfig.results[resultTrait]?.id || 'quiz'}-story.png`, {
+        type: 'image/png',
+      });
 
-      // iOS Web Share API Level 2 (Direct to Instagram Stories or Photos)
-      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'Hasil Tes Kepribadian Finansial',
-          text: `Cek arketipe pengeluaran & surviving lifestyle kamu di ${window.location.href}`,
+          title: initialConfig.results[resultTrait]?.name || 'My Cake Quiz Result',
+          text: `Gue dapet tipe ${initialConfig.results[resultTrait]?.name}! Cek kue kepribadian kerjamu di sini!`,
         });
-        setShareFeedback('Berhasil membuka share sheet!');
-      } else if (typeof navigator !== 'undefined' && navigator.share) {
-        await navigator.share({
-          title: 'Hasil Tes Kepribadian Finansial',
-          url: window.location.href,
-        });
-        setShareFeedback('Tautan kuis dibagikan!');
       } else {
-        // Fallback browser desktop
         const link = document.createElement('a');
-        link.download = `${config.brandName}-Result-Card.png`;
+        link.download = `${initialConfig.results[resultTrait]?.id || 'quiz'}-story.png`;
         link.href = dataUrl;
         link.click();
-        setShareFeedback('Gambar berhasil diunduh!');
       }
     } catch {
-      setShareFeedback('Gagal memproses gambar');
+      alert('Kartu sedang disiapkan, silakan screenshot hasilmu!');
     } finally {
       setIsExporting(false);
-      setTimeout(() => setShareFeedback(null), 3000);
     }
   };
 
-  const activeResult = config.results[resultTrait] || config.results['MJ'];
-  const progressPercent = Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100);
+  const activeResult = initialConfig.results[resultTrait] || initialConfig.results['R'];
 
   return (
-    <div className="min-h-screen bg-[#FFFDF7] text-[#2D2424] flex flex-col items-center justify-center p-4 selection:bg-[#FFE5A3]">
+    <div className="min-h-screen bg-[#FFFDF7] text-[#2D2424] font-sans antialiased selection:bg-[#FFD482]">
       {/* Top Header */}
-      <header className="w-full max-w-md mx-auto mb-5 flex items-center justify-between border-2 border-[#2D2424] bg-white px-4 py-3 rounded-2xl shadow-[3px_3px_0px_#2D2424]">
+      <header className="sticky top-0 z-30 bg-[#FFFDF7]/90 backdrop-blur-md border-b-2 border-[#2D2424] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-[#10B981] border border-[#2D2424]" />
-          <span className="text-xs font-black tracking-widest uppercase">{config.brandName}</span>
+          <span className="text-xl">🍰</span>
+          <span className="text-xs font-black tracking-widest uppercase text-[#2D2424]">
+            {initialConfig.brandName}
+          </span>
         </div>
-        <span className="text-[11px] font-bold bg-[#FEF08A] border border-[#2D2424] px-2 py-0.5 rounded-md">
-          100% ANONIM
-        </span>
+        <div className="text-[11px] font-bold px-2.5 py-1 bg-[#FFD482] rounded-full border border-[#2D2424]">
+          100% ANONYMOUS
+        </div>
       </header>
 
-      {/* Main Interactive Stage */}
-      <main className="w-full max-w-md mx-auto">
+      {/* Main Container */}
+      <main className="max-w-md mx-auto px-4 py-6">
         {/* State 1: Intro */}
         {gameState === 'intro' && (
-          <div className="border-3 border-[#2D2424] bg-white rounded-3xl p-6 shadow-[5px_5px_0px_#2D2424] text-center">
-            <div className="inline-block px-3 py-1 bg-[#E0E7FF] border-2 border-[#2D2424] rounded-full text-xs font-black uppercase mb-4">
-              CONSUMER INSIGHT 2025
+          <div className="bg-white rounded-2xl border-3 border-[#2D2424] p-6 shadow-[5px_5px_0px_#2D2424] text-center space-y-6">
+            <div className="inline-block px-3 py-1 bg-[#FEFCBF] text-[#744210] rounded-full text-xs font-black border border-[#2D2424]">
+              OFFICIAL CAREER TEST 2025
             </div>
 
-            <h1 className="text-2xl font-black text-[#2D2424] tracking-tight leading-tight mb-3">
-              {config.title}
-            </h1>
+            <div className="flex justify-center py-2">
+              <PixelCharacter type="tiramisu" size={130} />
+            </div>
 
-            <p className="text-sm font-medium text-[#574C4C] leading-relaxed mb-6">
-              {config.subtitle}
-            </p>
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-[#2D2424] mb-2 font-mono">
+                {initialConfig.title}
+              </h1>
+              <p className="text-sm font-semibold text-[#5A4A42] leading-relaxed">
+                {initialConfig.subtitle}
+              </p>
+            </div>
 
-            {/* Simulation Preview Card */}
-            <div className="border-2 border-[#2D2424] bg-[#FFFBEB] rounded-2xl p-4 mb-6 shadow-[3px_3px_0px_#2D2424] text-left">
-              <div className="text-[11px] font-black uppercase text-[#92400E] mb-1">DATA YANG DIUKUR:</div>
-              <ul className="text-xs font-semibold text-[#574C4C] space-y-1">
-                <li>• Sensitivitas Pengeluaran Tanggal Tua</li>
-                <li>• Level Impulsif Midnight Checkout</li>
-                <li>• Preferensi Brand Lokal vs Prestise Global</li>
-                <li>• Keseimbangan Finansial vs Kewarasan Mental</li>
-              </ul>
+            <div className="bg-[#FFFDF7] rounded-xl p-3 border-2 border-[#2D2424] text-left text-xs space-y-1.5 font-medium text-[#5A4A42]">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#2D2424]">🎮 Skenario:</span> 6 Petualangan di Desa Pencari Kerja
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#2D2424]">📊 Output:</span> Arketipe Kue, Indeks Workaholic & Radar 6 Sisi
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#2D2424]">✨ Output Story:</span> Siap langsung share ke IG Story / Galeri
+              </div>
             </div>
 
             <button
               onClick={handleStart}
-              className="w-full py-4 px-6 bg-[#FFD482] hover:bg-[#FFC966] text-[#2D2424] font-black text-base border-3 border-[#2D2424] rounded-2xl shadow-[4px_4px_0px_#2D2424] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_#2D2424] transition-all cursor-pointer"
+              className="w-full py-4 bg-[#FFD482] hover:bg-[#F6AD55] text-[#2D2424] font-black text-sm tracking-wider uppercase rounded-xl border-3 border-[#2D2424] shadow-[4px_4px_0px_#2D2424] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_#2D2424] transition-all cursor-pointer"
             >
-              MULAI TES SEKARANG
+              MULAI PETUALANGAN SEKARANG
             </button>
           </div>
         )}
 
-        {/* State 2: Question Steps */}
+        {/* State 2: Playing Question */}
         {gameState === 'playing' && currentQ && (
-          <div className="border-3 border-[#2D2424] bg-white rounded-3xl p-6 shadow-[5px_5px_0px_#2D2424]">
-            {/* Progress Header */}
-            <div className="flex items-center justify-between text-xs font-black mb-2">
-              <span className="uppercase text-[#786C6C]">PERTANYAAN {currentQuestionIndex + 1} DARI {totalQuestions}</span>
-              <span className="px-2 py-0.5 bg-[#FEF08A] border border-[#2D2424] rounded-md">{progressPercent}%</span>
-            </div>
-
+          <div className="space-y-4">
             {/* Progress Bar */}
-            <div className="w-full h-3 bg-[#F1ECE1] border-2 border-[#2D2424] rounded-full overflow-hidden mb-5">
-              <div
-                className="h-full bg-[#FFD482] transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
+            <div className="bg-white rounded-xl border-2 border-[#2D2424] p-3 shadow-[3px_3px_0px_#2D2424]">
+              <div className="flex justify-between items-center text-xs font-black uppercase text-[#2D2424] mb-2">
+                <span>QUEST {currentQ.index} / {totalQuestions}</span>
+                <span>{Math.round(((currentQ.index - 1) / totalQuestions) * 100)}%</span>
+              </div>
+              <div className="w-full h-3 bg-[#EDF2F7] rounded-full border border-[#2D2424] overflow-hidden">
+                <div
+                  className="h-full bg-[#FFD482] border-r border-[#2D2424] transition-all duration-300"
+                  style={{ width: `${(currentQ.index / totalQuestions) * 100}%` }}
+                />
+              </div>
             </div>
 
-            {/* Scenario Badge */}
-            <div className="inline-block px-3 py-1 bg-[#FEF08A] border-2 border-[#2D2424] rounded-full text-[11px] font-black uppercase tracking-wider mb-3">
-              {currentQ.categoryBadge}
-            </div>
+            {/* Question Card */}
+            <div className="bg-white rounded-2xl border-3 border-[#2D2424] p-5 shadow-[5px_5px_0px_#2D2424] space-y-4">
+              <div className="text-[11px] font-black px-2.5 py-1 bg-[#FEFCBF] text-[#744210] rounded-md border border-[#2D2424] inline-block">
+                {currentQ.categoryBadge}
+              </div>
 
-            {/* Real SVG Scenario Illustration */}
-            <div className="w-full h-44 rounded-2xl border-2 border-[#2D2424] overflow-hidden mb-4 bg-white shadow-[2px_2px_0px_#2D2424]">
-              <QuestionIllustration index={currentQuestionIndex} />
-            </div>
+              {/* Pixel Scene Illustration */}
+              <div className="rounded-xl border-2 border-[#2D2424] overflow-hidden">
+                <PixelScene index={currentQ.sceneType} />
+              </div>
 
-            {/* Question Text */}
-            <h2 className="text-base font-black text-[#2D2424] leading-snug mb-5">
-              {currentQ.scenarioTitle}
-            </h2>
+              <div>
+                <div className="text-xs font-bold text-[#A0AEC0] mb-1 font-mono uppercase tracking-wide">
+                  {currentQ.scenarioTitle}
+                </div>
+                <h2 className="text-base font-black text-[#2D2424] leading-snug">
+                  {currentQ.question}
+                </h2>
+              </div>
 
-            {/* Binary Choices */}
-            <div className="space-y-3">
-              {currentQ.choices.map((choice, cIdx) => {
-                const isSelected = selectedOption === choice.id;
-                const letter = cIdx === 0 ? 'A' : 'B';
-                return (
-                  <button
-                    key={choice.id}
-                    onClick={() => handleAnswer(choice.id, choice.targetTrait)}
-                    disabled={selectedOption !== null}
-                    className={`w-full text-left p-4 rounded-2xl border-2 border-[#2D2424] font-bold text-sm transition-all flex items-start gap-3 cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#A7F3D0] shadow-[1px_1px_0px_#2D2424] translate-x-[2px] translate-y-[2px]'
-                        : 'bg-white hover:bg-[#FFFBEB] shadow-[3px_3px_0px_#2D2424] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D2424]'
-                    }`}
-                  >
-                    <span className="w-7 h-7 rounded-xl bg-[#2D2424] text-white flex items-center justify-center text-xs font-black shrink-0">
-                      {letter}
-                    </span>
-                    <span className="leading-snug pt-0.5">{choice.text}</span>
-                  </button>
-                );
-              })}
+              {/* 2 Binary Choices */}
+              <div className="space-y-2.5 pt-2">
+                {currentQ.choices.map((choice, i) => {
+                  const isSelected = selectedOption === choice.id;
+                  const letter = i === 0 ? 'A' : 'B';
+                  return (
+                    <button
+                      key={choice.id}
+                      onClick={() => handleChoice(choice.targetTrait, choice.id)}
+                      className={`w-full text-left p-4 rounded-xl border-2 border-[#2D2424] transition-all cursor-pointer flex items-start gap-3 ${
+                        isSelected
+                          ? 'bg-[#FFD482] translate-x-[2px] translate-y-[2px] shadow-[1px_1px_0px_#2D2424]'
+                          : 'bg-[#FFFDF7] hover:bg-[#FEFCBF] shadow-[3px_3px_0px_#2D2424]'
+                      }`}
+                    >
+                      <span className="w-7 h-7 rounded-lg bg-white border-2 border-[#2D2424] flex items-center justify-center font-black text-xs shrink-0 shadow-[1px_1px_0px_#2D2424]">
+                        {letter}
+                      </span>
+                      <span className="text-xs font-bold text-[#2D2424] leading-relaxed pt-1">
+                        {choice.text}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
 
-        {/* State 3: Calculating Loading Transition */}
+        {/* State 3: Calculating */}
         {gameState === 'calculating' && (
-          <div className="border-3 border-[#2D2424] bg-white rounded-3xl p-8 shadow-[5px_5px_0px_#2D2424] text-center py-14">
-            <div className="w-16 h-16 mx-auto mb-4 border-3 border-[#2D2424] bg-[#FFD482] rounded-2xl flex items-center justify-center text-2xl animate-spin font-black shadow-[3px_3px_0px_#2D2424]">
-              ✦
+          <div className="bg-white rounded-2xl border-3 border-[#2D2424] p-8 shadow-[5px_5px_0px_#2D2424] text-center space-y-6">
+            <div className="animate-bounce flex justify-center">
+              <span className="text-5xl">🍰</span>
             </div>
-            <h3 className="text-lg font-black text-[#2D2424] mb-2 uppercase tracking-wide">
-              MENGANALISIS POLA SPENDING...
-            </h3>
-            <p className="text-xs font-semibold text-[#786C6C]">
-              Menghitung toleransi risiko, tingkat impulsive buying, dan arketipe lifestyle kamu.
-            </p>
+            <div>
+              <h3 className="text-xl font-black text-[#2D2424] mb-2 font-mono">
+                MEMANGGANG HASILMU...
+              </h3>
+              <p className="text-xs font-semibold text-[#718096]">
+                Menganalisis 6 dimensi kerja dan menemukan jodoh kue kepribadianmu...
+              </p>
+            </div>
+            <div className="w-48 mx-auto h-2.5 bg-[#EDF2F7] rounded-full border border-[#2D2424] overflow-hidden">
+              <div className="h-full bg-[#FFD482] animate-pulse w-full" />
+            </div>
           </div>
         )}
 
-        {/* State 4: Result Card Presentation */}
+        {/* State 4: Result Card */}
         {gameState === 'result' && activeResult && (
           <div className="space-y-4">
-            {/* The 9:16 Story Card Container (Target of HTML to Image export) */}
+            {/* Story Card to be Exported */}
             <div
               ref={cardRef}
-              className="border-3 border-[#2D2424] bg-white rounded-3xl p-6 shadow-[6px_6px_0px_#2D2424] text-[#2D2424]"
+              className="bg-white rounded-3xl border-3 border-[#2D2424] p-5 shadow-[6px_6px_0px_#2D2424] space-y-4"
+              style={{ backgroundColor: '#FFFDF7' }}
             >
-              {/* Card Header Branding */}
-              <div className="flex items-center justify-between border-b-2 border-[#2D2424] pb-3 mb-4">
-                <span className="text-xs font-black tracking-widest uppercase">{config.brandName}</span>
-                <span className="text-[10px] font-black uppercase bg-[#FEF08A] border border-[#2D2424] px-2 py-0.5 rounded">
-                  ARKETIPE 2025
-                </span>
+              {/* Header inside card */}
+              <div
+                className="rounded-2xl border-2 border-[#2D2424] p-3 flex items-center justify-between"
+                style={{ backgroundColor: activeResult.headerBg }}
+              >
+                <div>
+                  <div className="text-[10px] font-mono font-black uppercase text-[#718096]">
+                    WHAT CAKE R U?
+                  </div>
+                  <div className="text-sm font-black text-[#2D2424]">
+                    {activeResult.roleBadge}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[9px] font-black uppercase text-[#718096]">WORKAHOLISM</div>
+                  <div className="text-base font-black text-[#C53030] font-mono">
+                    {activeResult.workaholismIndex}
+                  </div>
+                </div>
               </div>
 
-              {/* Archetype Title */}
-              <div className="text-center mb-4">
-                <div className="text-4xl mb-1">{activeResult.personaAvatarSvg}</div>
-                <h2 className="text-xl font-black text-[#2D2424] tracking-tight">
-                  {activeResult.archetypeName}
+              {/* Character Pixel Art */}
+              <div className="flex flex-col items-center justify-center py-1">
+                <PixelCharacter type={activeResult.spriteType} size={110} />
+                <h2 className="text-2xl font-black text-[#2D2424] mt-2 font-mono tracking-tight">
+                  {activeResult.name}
                 </h2>
-                <div className="text-xs font-bold text-[#D97706] uppercase tracking-wide mt-0.5">
-                  {activeResult.dominantTrait} • INDEX {activeResult.financialVibeIndex}%
+                <div className="flex flex-wrap justify-center gap-1.5 mt-2">
+                  {activeResult.hashtags.map((h, i) => (
+                    <span
+                      key={i}
+                      className="text-[10px] font-black px-2 py-0.5 bg-white rounded-md border border-[#2D2424] shadow-[1px_1px_0px_#2D2424]"
+                    >
+                      {h}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* Tagline Box */}
-              <div className="bg-[#FFFBEB] border-2 border-[#2D2424] p-3 rounded-2xl mb-4 shadow-[2px_2px_0px_#2D2424]">
-                <p className="text-xs font-bold text-[#574C4C] italic text-center">
-                  &ldquo;{activeResult.tagline}&rdquo;
-                </p>
+              {/* Description */}
+              <div className="bg-white rounded-xl p-3 border-2 border-[#2D2424] text-xs leading-relaxed font-semibold text-[#4A5568]">
+                {activeResult.description}
               </div>
 
-              {/* Metrics Grid */}
-              <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
-                <div className="border-2 border-[#2D2424] p-2.5 rounded-xl bg-white shadow-[2px_2px_0px_#2D2424]">
-                  <div className="text-[10px] font-black text-[#786C6C] uppercase">COPING STRES</div>
-                  <div className="font-extrabold text-[#15803D]">{activeResult.stressCopingMechanism}</div>
-                </div>
-                <div className="border-2 border-[#2D2424] p-2.5 rounded-xl bg-white shadow-[2px_2px_0px_#2D2424]">
-                  <div className="text-[10px] font-black text-[#786C6C] uppercase">TRIGGER BELANJA</div>
-                  <div className="font-extrabold text-[#B91C1C]">{activeResult.spendingTrigger}</div>
-                </div>
-              </div>
+              {/* Radar Chart (6 Dimensions) */}
+              <RadarChart stats={activeResult.spiderStats} />
 
-              {/* Social Matching */}
-              <div className="border-2 border-[#2D2424] p-3 rounded-2xl bg-[#F8FAFC] mb-4 space-y-1.5 shadow-[2px_2px_0px_#2D2424] text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-black text-[#15803D]">PARTNER HANGOUT IDEAL:</span>
-                  <span className="font-bold">{activeResult.bestieArchetype}</span>
+              {/* Meta Grid: Lucky Charm, Work Bestie, Just Coworker */}
+              <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
+                <div className="bg-white p-2.5 rounded-xl border-2 border-[#2D2424] shadow-[2px_2px_0px_#2D2424]">
+                  <div className="text-[9px] font-black text-[#A0AEC0] uppercase">LUCKY CHARM</div>
+                  <div className="text-[#2D2424] mt-0.5">{activeResult.luckyCharm}</div>
                 </div>
-                <div className="flex items-center justify-between border-t border-[#E2E8F0] pt-1">
-                  <span className="font-black text-[#B91C1C]">BAHAYA JIKA BARENG:</span>
-                  <span className="font-bold">{activeResult.clashArchetype}</span>
+                <div className="bg-white p-2.5 rounded-xl border-2 border-[#2D2424] shadow-[2px_2px_0px_#2D2424]">
+                  <div className="text-[9px] font-black text-[#48BB78] uppercase">WORK BESTIES</div>
+                  <div className="text-[#2D2424] mt-0.5">{activeResult.workBesties}</div>
                 </div>
               </div>
 
-              {/* Actionable Advice */}
-              <div className="border-2 border-[#2D2424] p-3 rounded-2xl bg-[#FEFCE8] mb-3 shadow-[2px_2px_0px_#2D2424]">
-                <div className="text-[10px] font-black uppercase text-[#854D0E] mb-1">REKOMENDASI FINANSIAL:</div>
-                <p className="text-xs font-bold text-[#451A03] leading-relaxed">
-                  {activeResult.actionGuidance}
-                </p>
+              <div className="bg-white p-2.5 rounded-xl border-2 border-[#2D2424] text-[11px] font-bold shadow-[2px_2px_0px_#2D2424]">
+                <div className="text-[9px] font-black text-[#E53E3E] uppercase">JUST COWORKERS</div>
+                <div className="text-[#2D2424] mt-0.5">{activeResult.justCoworkers}</div>
+              </div>
+
+              {/* Recommended Roles */}
+              <div className="bg-[#FFF9E6] p-2.5 rounded-xl border-2 border-[#2D2424]">
+                <div className="text-[9px] font-black text-[#744210] uppercase mb-1">
+                  POSISI & PEKERJAAN REKOMENDASI:
+                </div>
+                <div className="text-[11px] font-bold text-[#2D2424]">
+                  {activeResult.recommendedRoles.join(' • ')}
+                </div>
               </div>
 
               {/* Card Footer Watermark */}
-              <div className="pt-2 text-center text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">
-                SCREENSHOT & SHARE KE INSTAGRAM STORY • 100% ANONIM
+              <div className="text-center pt-1 border-t border-[#E2E8F0] flex justify-between items-center text-[9px] font-bold text-[#A0AEC0] font-mono">
+                <span>{initialConfig.brandName}</span>
+                <span>white-label-quiz.pages.dev</span>
               </div>
             </div>
 
-            {/* Share Feedback Toast */}
-            {shareFeedback && (
-              <div className="p-3 bg-[#A7F3D0] border-2 border-[#2D2424] rounded-xl text-xs font-black text-center shadow-[2px_2px_0px_#2D2424]">
-                {shareFeedback}
-              </div>
-            )}
-
-            {/* Action Buttons (Deslopped, No Lucide icons) */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Action Buttons */}
+            <div className="space-y-2 pt-2">
               <button
                 onClick={handleShareStory}
                 disabled={isExporting}
-                className="py-3.5 px-4 bg-[#FFD482] hover:bg-[#FFC966] text-[#2D2424] font-black text-sm border-3 border-[#2D2424] rounded-2xl shadow-[3px_3px_0px_#2D2424] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D2424] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-[#FFD482] hover:bg-[#F6AD55] text-[#2D2424] font-black text-xs tracking-wider uppercase rounded-xl border-3 border-[#2D2424] shadow-[4px_4px_0px_#2D2424] active:translate-x-[2px] active:translate-y-[2px] transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                <span>SHARE STORY / UNDUH</span>
+                <span>{isExporting ? 'MEMPROSES KARTU...' : 'SHARE STORY / SIMPAN KE GALERI'}</span>
               </button>
 
               <button
                 onClick={handleStart}
-                className="py-3.5 px-4 bg-white hover:bg-[#F3F4F6] text-[#2D2424] font-black text-sm border-3 border-[#2D2424] rounded-2xl shadow-[3px_3px_0px_#2D2424] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#2D2424] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 bg-white hover:bg-[#EDF2F7] text-[#2D2424] font-black text-xs tracking-wider uppercase rounded-xl border-2 border-[#2D2424] shadow-[2px_2px_0px_#2D2424] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer"
               >
-                <span>ULANGI TES</span>
+                ULANGI PETUALANGAN
               </button>
             </div>
           </div>
