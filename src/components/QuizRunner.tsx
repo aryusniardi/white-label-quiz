@@ -96,10 +96,26 @@ export function QuizRunner({ initialConfig }: QuizRunnerProps) {
         cacheBust: true,
         pixelRatio: 2,
       });
-      const link = document.createElement('a');
-      link.download = `kue-kepribadian-${resultTrait}.png`;
-      link.href = dataUrl;
-      link.click();
+
+      // Convert dataUrl to Blob for Web Share API (Direct save to iOS Photos / Camera Roll)
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `kue-kepribadian-${resultTrait}.png`, { type: 'image/png' });
+
+      // iOS Safari native share sheet allows direct "Save Image" to Photos app
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Hasil Tes Kepribadian Kue',
+          text: `Aku dapet kue ${activeResult?.cakeName || 'Kue'}! Coba cek kuis kamu di sini:`,
+        });
+      } else {
+        // Fallback for desktop or unsupported browsers
+        const link = document.createElement('a');
+        link.download = `kue-kepribadian-${resultTrait}.png`;
+        link.href = dataUrl;
+        link.click();
+      }
     } catch (err) {
       console.error('Export failed:', err);
     } finally {
