@@ -1,7 +1,7 @@
 export interface QuizChoice {
   id: string;
   text: string;
-  targetTrait: string; // e.g. 'R', 'I', 'A', 'S', 'E', 'C'
+  targetTrait: string;
 }
 
 export interface QuizQuestion {
@@ -14,22 +14,32 @@ export interface QuizQuestion {
 
 export interface TraitResult {
   traitCode: string;
-  name: string; // e.g. "Tiramisu - The Analytical Architect"
-  titleBadge: string; // e.g. "Investigative & Critical Thinker"
-  archetype: string; // e.g. "Problem Solver"
+  name: string;
+  titleBadge: string;
+  archetype: string;
   tagline: string;
   description: string;
   strengths: string[];
   workStyle: string;
   idealRole: string;
-  besties: string; // Compatible traits
+  besties: string;
   watchout: string;
-  colorTheme: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    bgBadge: string;
-  };
+  avatarIcon?: string;
+}
+
+export type BackgroundStyle = 'pure-black' | 'dark-forest' | 'warm-editorial' | 'custom-gradient';
+
+export interface ThemeConfig {
+  backgroundStyle: BackgroundStyle;
+  backgroundColor: string; // e.g. '#000000' or '#0F3B27'
+  cardBackground: string; // e.g. '#111113'
+  cardBorder: string; // e.g. 'rgba(255, 255, 255, 0.08)'
+  cardRadius: number; // e.g. 28
+  textColor: string; // e.g. '#F5F5F7'
+  subtextColor: string; // e.g. '#8E8E93'
+  accentColor: string; // e.g. '#FFFFFF' or brand primary
+  fontFamily: 'geist' | 'serif' | 'mono';
+  enableNoiseOverlay?: boolean;
 }
 
 export interface BrandConfig {
@@ -37,16 +47,15 @@ export interface BrandConfig {
   brandName: string;
   brandTagline: string;
   logoUrl?: string;
-  themeColor: string; // Hex color for CTA and highlights
-  ctaUrl: string;
-  ctaText: string;
-  leadCaptureEnabled: boolean;
+  ctaUrl?: string;
+  ctaText?: string;
 }
 
 export interface QuizConfig {
   id: string;
   title: string;
   subtitle: string;
+  theme: ThemeConfig;
   brand: BrandConfig;
   questions: QuizQuestion[];
   results: Record<string, TraitResult>;

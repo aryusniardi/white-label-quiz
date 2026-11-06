@@ -4,14 +4,24 @@ export const demoQuizConfig: QuizConfig = {
   id: 'cake-career-v1',
   title: 'What Cake Are You?',
   subtitle: 'Temukan Destined Role & Gaya Kerjamu di Dunia Profesional',
+  theme: {
+    backgroundStyle: 'pure-black',
+    backgroundColor: '#000000',
+    cardBackground: '#111113',
+    cardBorder: 'rgba(255, 255, 255, 0.08)',
+    cardRadius: 28,
+    textColor: '#F5F5F7',
+    subtextColor: '#8E8E93',
+    accentColor: '#FFFFFF',
+    fontFamily: 'geist',
+    enableNoiseOverlay: true,
+  },
   brand: {
     brandId: 'sample-brand',
     brandName: 'CareerLab Studio',
     brandTagline: 'Empowering Next-Gen Talent & Brands',
-    themeColor: '#059669', // Emerald-600
     ctaUrl: 'https://example.com/careers',
     ctaText: 'Explore Opportunities for Your Role →',
-    leadCaptureEnabled: true,
   },
   questions: [
     {
@@ -78,117 +88,87 @@ export const demoQuizConfig: QuizConfig = {
   results: {
     'R': {
       traitCode: 'R',
-      name: 'Layer Cake (The Builder)',
+      name: 'Layer Cake',
       titleBadge: 'Realistic • Pragmatic Craftsman',
       archetype: 'The Reliable Executor',
       tagline: 'Fokus pada hasil konkret, eksekusi solid, dan solusi praktis.',
-      description: 'Kamu adalah pondasi yang menjaga kapal tetap berlayar. Kamu tidak suka berteori tanpa bukti dan selalu siap terjun langsung menyelesaikan masalah mekanis maupun sistem.',
+      description: 'Kamu adalah pondasi yang menjaga kapal tetap berlayar. Menolak berteori tanpa bukti dan selalu siap terjun langsung menyelesaikan sistem.',
       strengths: ['Hands-on Problem Solving', 'High Reliability', 'Real-world Execution'],
       workStyle: 'Pragmatis, to-the-point, fokus aksi daripada rapat bertele-tele.',
       idealRole: 'Engineers, Operations Lead, Product Builders, Hardware/DevOps.',
       besties: 'Tiramisu (I) & Roll Cake (C)',
-      watchout: 'Jangan lupa luangkan waktu untuk mengomunikasikan proses ke tim.',
-      colorTheme: {
-        primary: '#b45309', // Amber-700
-        secondary: '#fef3c7',
-        accent: '#f59e0b',
-        bgBadge: 'bg-amber-100 text-amber-900 border-amber-300'
-      }
+      watchout: 'Komunikasikan progres secara berkala ke tim agar tidak disalahpahami.',
+      avatarIcon: '🍰'
     },
     'I': {
       traitCode: 'I',
-      name: 'Tiramisu (The Thinker)',
+      name: 'Tiramisu',
       titleBadge: 'Investigative • Deep Analytical Mind',
       archetype: 'The Strategic Mastermind',
       tagline: 'Mengurai benang kusut data menjadi strategi yang tajam.',
-      description: 'Kamu adalah pemikir analitis dengan rasa ingin tahu tinggi. Kamu menolak asumsi tanpa validasi dan selalu mencari prinsip fundamental di balik setiap fenomena.',
+      description: 'Pemikir analitis dengan rasa ingin tahu tinggi. Menolak asumsi tanpa validasi dan mencari prinsip fundamental di balik setiap fenomena.',
       strengths: ['Deep Diagnostics', 'Logical Synthesis', 'Data-driven Intuition'],
       workStyle: 'Fokus tinggi, riset komprehensif, mencintai abstraksi dan data.',
       idealRole: 'Data Scientists, Strategy Leads, Researchers, Systems Architects.',
       besties: 'Layer Cake (R) & Macaron (A)',
-      watchout: 'Waspadai over-thinking yang menghambat kecepatan eksekusi.',
-      colorTheme: {
-        primary: '#4338ca', // Indigo-700
-        secondary: '#e0e7ff',
-        accent: '#6366f1',
-        bgBadge: 'bg-indigo-100 text-indigo-900 border-indigo-300'
-      }
+      watchout: 'Waspadai over-thinking yang menghambat kecepatan eksekusi awal.',
+      avatarIcon: '☕'
     },
     'A': {
       traitCode: 'A',
-      name: 'Macaron (The Creator)',
+      name: 'Macaron',
       titleBadge: 'Artistic • Creative Visionary',
       archetype: 'The Aesthetic Pioneer',
-      tagline: 'Menciptakan karya yang berkarakter dan menggetarkan audiens.',
-      description: 'Kamu membawa jiwa dan estetika ke dalam dunia kerja. Pendekatanmu selalu out-of-the-box, berani menabrak standar biasa untuk melahirkan produk yang memorable.',
-      strengths: ['Creative Originality', 'High Empathy & Taste', 'Storytelling Mastery'],
-      workStyle: 'Eksploratif, ekspresif, peka terhadap harmoni visual dan narasi.',
-      idealRole: 'Designers, Brand Directors, Creative Writers, Creative Technologists.',
+      tagline: 'Menciptakan keindahan dan identitas visual yang memikat.',
+      description: 'Melihat dunia lewat lensa estetika, narasi, dan diferensiasi emosional. Berani keluar jalur untuk menciptakan gebrakan baru.',
+      strengths: ['Visual Storytelling', 'Intuitive Empathy', 'Originality'],
+      workStyle: 'Spontan, berani bereksperimen, sensitif terhadap detail visual.',
+      idealRole: 'Designers, Art Directors, Creative Strategists, Brand Leads.',
       besties: 'Strawberry Cake (S) & Tiramisu (I)',
-      watchout: 'Pastikan ide cemerlangmu tetap sinkron dengan batasan timeline dan budget.',
-      colorTheme: {
-        primary: '#db2777', // Pink-600
-        secondary: '#fce7f3',
-        accent: '#ec4899',
-        bgBadge: 'bg-pink-100 text-pink-900 border-pink-300'
-      }
+      watchout: 'Beri ruang untuk pragmatisme agar visi estetik dapat dieksekusi tepat waktu.',
+      avatarIcon: '🎨'
     },
     'S': {
       traitCode: 'S',
-      name: 'Strawberry Cake (The Connector)',
-      titleBadge: 'Social • Culture & People Catalyst',
-      archetype: 'The Harmonizer',
-      tagline: 'Perekat tim yang menyulap ruang kerja menjadi komunitas suportif.',
-      description: 'Kekuatan utamamu ada pada empati dan kecerdasan emosional. Kamu peka terhadap apa yang dirasakan rekan kerja dan selalu tahu cara menyatukan visi bersama.',
-      strengths: ['Interpersonal Harmony', 'Active Listening', 'Conflict Resolution'],
-      workStyle: 'Kolaboratif, transparan, selalu memprioritaskan well-being tim.',
-      idealRole: 'Community Lead, People Operations, Account Execs, Customer Experience.',
-      besties: 'Macaron (A) & Cupcake (E)',
-      watchout: 'Belajarlah berkata tidak pada permintaan yang mengorbankan kapasitasmu.',
-      colorTheme: {
-        primary: '#e11d48', // Rose-600
-        secondary: '#ffe4e6',
-        accent: '#f43f5e',
-        bgBadge: 'bg-rose-100 text-rose-900 border-rose-300'
-      }
+      name: 'Strawberry Cake',
+      titleBadge: 'Social • Culture Catalyst',
+      archetype: 'The People Harmonizer',
+      tagline: 'Menghubungkan manusia, membangun sinergi, dan membakar antusiasme.',
+      description: 'Sumber energi kehangatan dalam tim. Memiliki kepekaan interpersonal tajam dan mampu membaca dinamika ruang tanpa perlu banyak kata.',
+      strengths: ['Active Listening', 'High EQ Collaboration', 'Conflict Resolution'],
+      workStyle: 'Inklusif, apresiatif, fokus pada kekompakan dan motivasi tim.',
+      idealRole: 'People Ops, Community Managers, Team Facilitators, Account Leads.',
+      besties: 'Cupcake (E) & Macaron (A)',
+      watchout: 'Jaga energi personal agar tidak kelelahan akibat menyerap beban emosi tim.',
+      avatarIcon: '🍓'
     },
     'E': {
       traitCode: 'E',
-      name: 'Cupcake (The Leader)',
+      name: 'Cupcake',
       titleBadge: 'Enterprising • Growth Driver',
-      archetype: 'The Catalyst',
-      tagline: 'Menggerakkan inisiatif, mengambil risiko terukur, mengejar kemenangan.',
-      description: 'Kamu adalah pribadi berdaya dorong tinggi dengan insting bisnis tajam. Kamu memimpin dari depan dan paling bersemangat saat menghadapi target ambisius.',
-      strengths: ['Decisive Action', 'Pitching & Persuasion', 'Strategic Initiative'],
-      workStyle: 'Energetik, berorientasi hasil, berani mengambil keputusan sulit.',
-      idealRole: 'Founders, Growth Marketers, Product Managers, Business Development.',
-      besties: 'Strawberry Cake (S) & Roll Cake (C)',
-      watchout: 'Pastikan tim tidak burnout saat mengejar momentum akselerasi.',
-      colorTheme: {
-        primary: '#ea580c', // Orange-600
-        secondary: '#ffedd5',
-        accent: '#f97316',
-        bgBadge: 'bg-orange-100 text-orange-900 border-orange-300'
-      }
+      archetype: 'The High-Impact Catalyst',
+      tagline: 'Mengejar peluang besar, memimpin inisiatif, dan mencetak milestone.',
+      description: 'Memiliki ambisi alami untuk memimpin dan menggerakkan jarum bisnis. Cepat mengambil keputusan di tengah ketidakpastian.',
+      strengths: ['Persuasive Pitching', 'Opportunity Seeking', 'High Risk Tolerance'],
+      workStyle: 'Cepat, berorientasi tujuan, tangguh menghadapi penolakan.',
+      idealRole: 'Founders, Growth Leads, Sales Executives, Product Owners.',
+      besties: 'Roll Cake (C) & Strawberry Cake (S)',
+      watchout: 'Dengarkan masukan data dan proses sebelum mengeksekusi pivot mendadak.',
+      avatarIcon: '🧁'
     },
     'C': {
       traitCode: 'C',
-      name: 'Roll Cake (The Organizer)',
-      titleBadge: 'Conventional • Systems & Precision Pillar',
-      archetype: 'The Quality Anchor',
-      tagline: 'Kerapian, ketepatan data, dan standard operating procedure tanpa kompromi.',
-      description: 'Kamu menjaga dunia tetap berjalan dengan akurasi dan integritas tinggi. Di tengah kekacauan, kamulah orang pertama yang menghadirkan keteraturan dan struktur.',
-      strengths: ['Flawless Structure', 'Attention to Detail', 'Operational Rigor'],
-      workStyle: 'Metodis, terencana rapi, menjaga konsistensi tanpa celah.',
-      idealRole: 'Finance Leads, Compliance, Operations Specialists, Project Managers.',
+      name: 'Roll Cake',
+      titleBadge: 'Conventional • Quality Anchor',
+      archetype: 'The Systems Guardian',
+      tagline: 'Menegakkan standar tinggi, konsistensi mutu, dan akurasi tanpa celah.',
+      description: 'Benteng pertahanan kualitas. Tertib, sistematis, dan memastikan tidak ada detail penting yang terlewat dalam eksekusi.',
+      strengths: ['Flawless Organization', 'Quality Assurance', 'Process Engineering'],
+      workStyle: 'Terstruktur, disiplin, berorientasi pada aturan main dan efisiensi.',
+      idealRole: 'QA Engineers, Financial Analysts, Operations Architects, Compliance.',
       besties: 'Layer Cake (R) & Cupcake (E)',
-      watchout: 'Tetap terbuka pada improvisasi fleksibel ketika rencana berubah mendadak.',
-      colorTheme: {
-        primary: '#0d9488', // Teal-600
-        secondary: '#ccfbf1',
-        accent: '#14b8a6',
-        bgBadge: 'bg-teal-100 text-teal-900 border-teal-300'
-      }
+      watchout: 'Terbuka terhadap fleksibilitas ketika situasi membutuhkan improvisasi darurat.',
+      avatarIcon: '📜'
     }
   }
 };
