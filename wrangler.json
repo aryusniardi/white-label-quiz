@@ -1,9 +1,4 @@
 {
   "name": "white-label-quiz",
-  "routes": [
-    {
-      "pattern": "*",
-      "zone_name": ""
-    }
-  ]
+  "pages_build_output_dir": "out"
 }

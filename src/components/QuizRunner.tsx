@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { QuizConfig } from '@/types/quiz';
-import { Sparkles, ArrowRight, CheckCircle2, RotateCcw, Share2, Download, Building2 } from 'lucide-react';
+import { Sparkles, ArrowRight, RotateCcw, Share2, Download, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toPng } from 'html-to-image';
 
@@ -13,80 +13,64 @@ interface QuizRunnerProps {
 export function QuizRunner({ config }: QuizRunnerProps) {
   const [gameState, setGameState] = useState<'intro' | 'playing' | 'lead_capture' | 'calculating' | 'result'>('intro');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [scores, setScores] = useState<Record<string, number>>({
-    R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
-  });
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [resultTrait, setResultTrait] = useState<string>('R');
   const [leadInfo, setLeadInfo] = useState({ name: '', email: '' });
   const [isExporting, setIsExporting] = useState(false);
+  const [copied, setCopied] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const totalQuestions = config.questions.length;
   const currentQ = config.questions[currentQuestionIndex];
 
   const handleStart = () => {
-    setScores({ R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 });
-    setCurrentQuestionIndex(0);
-    setSelectedOption(null);
     setGameState('playing');
+    setCurrentQuestionIndex(0);
+    setScores({});
+    setSelectedOption(null);
   };
 
-  const handleSelectOption = (choiceId: string, trait: string) => {
+  const handleSelectChoice = (targetTrait: string, choiceId: string) => {
     setSelectedOption(choiceId);
-    
-    // Accumulate score
-    const updatedScores = {
+
+    const newScores = {
       ...scores,
-      [trait]: (scores[trait] || 0) + 1
+      [targetTrait]: (scores[targetTrait] || 0) + 1,
     };
-    setScores(updatedScores);
+    setScores(newScores);
 
-    // Auto-advance with smooth slight delay
     setTimeout(() => {
-      if (currentQuestionIndex + 1 < totalQuestions) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedOption(null);
+      setSelectedOption(null);
+      if (currentQuestionIndex < totalQuestions - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
       } else {
-        // Quiz completed
-        calculateFinalResult(updatedScores);
+        const sorted = Object.entries(newScores).sort((a, b) => b[1] - a[1]);
+        const highestTrait = sorted.length > 0 ? sorted[0][0] : 'R';
+        setResultTrait(highestTrait);
+
+        if (config.brand.leadCaptureEnabled) {
+          setGameState('lead_capture');
+        } else {
+          triggerCalculationScreen(highestTrait);
+        }
       }
-    }, 380);
+    }, 260);
   };
 
-  const calculateFinalResult = (finalScores: Record<string, number>) => {
-    // Find trait with max score (argmax with tie-breaker order)
-    let bestTrait = 'R';
-    let maxScore = -1;
-    const traits = ['R', 'I', 'A', 'S', 'E', 'C'];
-    
-    for (const t of traits) {
-      const score = finalScores[t] || 0;
-      if (score > maxScore) {
-        maxScore = score;
-        bestTrait = t;
-      }
-    }
-
-    setResultTrait(bestTrait);
-
-    if (config.brand.leadCaptureEnabled) {
-      setGameState('lead_capture');
-    } else {
-      triggerCalculationScreen(bestTrait);
-    }
-  };
-
-  const triggerCalculationScreen = (traitToSet?: string) => {
+  const triggerCalculationScreen = (trait: string) => {
     setGameState('calculating');
     setTimeout(() => {
       setGameState('result');
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    }, 1200);
+      try {
+        confetti({
+          particleCount: 75,
+          spread: 70,
+          origin: { y: 0.65 },
+          colors: ['#FFFFFF', '#D4AF37', '#8E8579', '#C2B8A3'],
+        });
+      } catch {}
+    }, 850);
   };
 
   const handleLeadSubmit = (e: React.FormEvent) => {
@@ -96,185 +80,203 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
   const handleDownloadCard = async () => {
     if (!cardRef.current) return;
+    setIsExporting(true);
     try {
-      setIsExporting(true);
       const dataUrl = await toPng(cardRef.current, {
         cacheBust: true,
-        pixelRatio: 2, // Retain high density
+        pixelRatio: 2.5,
+        backgroundColor: '#000000',
       });
       const link = document.createElement('a');
-      link.download = `${config.brand.brandId}-persona-${resultTrait}.png`;
+      link.download = `${config.results[resultTrait]?.name || 'archetype'}-persona.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error('Failed to export card image', err);
-      alert('Gagal mengunduh kartu. Silakan screenshot layar ini.');
+      console.error('Failed to download card:', err);
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard?.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const activeResult = config.results[resultTrait] || config.results['R'];
 
   return (
-    <div className="min-h-screen bg-[#0c0d10] text-zinc-100 flex flex-col justify-between selection:bg-emerald-500/30 selection:text-emerald-300 font-sans">
-      {/* Top Brand Nav Header */}
-      <header className="w-full border-b border-zinc-800/80 bg-zinc-950/60 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-            <Building2 className="h-4 w-4" />
-          </div>
-          <div>
-            <div className="text-xs font-semibold tracking-wider uppercase text-zinc-400">
+    <div className="min-h-screen bg-black text-[#EDEDED] flex flex-col justify-between selection:bg-white/20 selection:text-white">
+      {/* Top Floating Glass Pill Header */}
+      <header className="sticky top-5 z-40 px-4 flex justify-center">
+        <div className="glass-pill rounded-full px-5 py-2.5 flex items-center justify-between gap-6 max-w-md w-full">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-emerald-400/90 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="text-xs font-semibold tracking-wider uppercase text-[#E5E5EA]">
               {config.brand.brandName}
-            </div>
-            <div className="text-[10px] text-zinc-500 hidden sm:block">
-              {config.brand.brandTagline}
-            </div>
+            </span>
           </div>
+          {gameState === 'playing' ? (
+            <span className="text-[11px] font-mono tracking-tight text-[#8E8E93]">
+              {String(currentQuestionIndex + 1).padStart(2, '0')} / {String(totalQuestions).padStart(2, '0')}
+            </span>
+          ) : (
+            <span className="text-[10px] uppercase tracking-widest text-[#8E8E93] font-medium">
+              Holland RIASEC
+            </span>
+          )}
         </div>
-
-        {gameState === 'playing' && (
-          <div className="flex items-center gap-2">
-            <div className="text-xs font-mono text-zinc-400">
-              {currentQuestionIndex + 1} / {totalQuestions}
-            </div>
-            <div className="w-24 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-emerald-500 transition-all duration-300 ease-out"
-                style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
-              />
-            </div>
-          </div>
-        )}
       </header>
 
-      {/* Main Experience Body */}
-      <main className="flex-1 max-w-xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
-        {/* State 1: Intro */}
+      {/* Main Content Area */}
+      <main className="flex-1 flex items-center justify-center p-4 py-8 max-w-lg mx-auto w-full">
+        {/* State 1: Intro Bento */}
         {gameState === 'intro' && (
-          <div className="text-center space-y-6 py-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
-              <Sparkles className="h-3.5 w-3.5" />
-              White-Label Interactive Career Quiz
-            </div>
-
+          <div className="bento-card p-8 md:p-10 w-full space-y-8 animate-in fade-in duration-500">
             <div className="space-y-3">
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+              <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/[0.06] border border-white/10 text-[11px] font-medium tracking-wide text-[#A1A1A6]">
+                <Sparkles className="w-3.5 h-3.5 text-white/80" />
+                White-Label Psychometric Architecture
+              </div>
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white leading-[1.15]">
                 {config.title}
               </h1>
-              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+              <p className="text-sm text-[#8E8E93] leading-relaxed pt-1">
                 {config.subtitle}
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-left space-y-2 text-xs text-zinc-400">
-              <div className="font-semibold text-zinc-300 flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                Format Pengalaman:
+            {/* Visual Bento Highlight */}
+            <div className="rounded-[20px] border border-white/[0.08] bg-[#141416] p-5 space-y-3">
+              <div className="flex items-center justify-between text-xs text-[#8E8E93]">
+                <span className="uppercase tracking-wider text-[10px]">Test Matrix</span>
+                <span className="font-mono">12 Scenarios · ~90s</span>
               </div>
-              <ul className="list-disc list-inside space-y-1 pl-1 text-zinc-400">
-                <li>12 pertanyaan situasi praktis (hanya 2 pilihan per slide)</li>
-                <li>Menghasilkan Holland RIASEC Workplace Persona</li>
-                <li>Unduh kartu hasil format Instagram Story 9:16</li>
-              </ul>
+              <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-base font-semibold text-white">6</div>
+                  <div className="text-[10px] text-[#8E8E93] uppercase">Archetypes</div>
+                </div>
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-base font-semibold text-white">100%</div>
+                  <div className="text-[10px] text-[#8E8E93] uppercase">Private</div>
+                </div>
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-base font-semibold text-white">9:16</div>
+                  <div className="text-[10px] text-[#8E8E93] uppercase">Story Card</div>
+                </div>
+              </div>
             </div>
 
             <button
               onClick={handleStart}
-              className="w-full py-4 px-6 rounded-2xl font-semibold text-base bg-emerald-500 hover:bg-emerald-400 text-zinc-950 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full group py-4 px-6 rounded-full bg-white text-black font-semibold text-sm flex items-center justify-center gap-3 transition-all duration-300 hover:bg-[#E5E5EA] active:scale-[0.98] shadow-lg shadow-white/10"
             >
-              Mulai Tes Sekarang
-              <ArrowRight className="h-5 w-5" />
+              <span>Mulai Asesmen</span>
+              <div className="w-6 h-6 rounded-full bg-black/10 flex items-center justify-center transition-transform group-hover:translate-x-1">
+                <ArrowRight className="w-3.5 h-3.5 text-black" />
+              </div>
             </button>
           </div>
         )}
 
-        {/* State 2: Question Active */}
+        {/* State 2: Quiz Playing Questions */}
         {gameState === 'playing' && currentQ && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300">
-            <div className="space-y-1.5">
-              <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">
-                {currentQ.scenarioSubtitle || `Pertanyaan #${currentQ.stepNumber}`}
-              </span>
-              <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">
-                {currentQ.question}
-              </h2>
+          <div className="w-full space-y-6 animate-in fade-in duration-300">
+            {/* Progress Bar */}
+            <div className="w-full bg-white/[0.08] h-1 rounded-full overflow-hidden">
+              <div
+                className="bg-white h-full transition-all duration-300 ease-out"
+                style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
+              />
             </div>
 
-            <div className="space-y-3 pt-2">
-              {currentQ.options.map((opt) => {
-                const isSelected = selectedOption === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    onClick={() => handleSelectOption(opt.id, opt.targetTrait)}
-                    className={`w-full text-left p-5 rounded-2xl border transition-all duration-200 cursor-pointer ${
-                      isSelected
-                        ? 'bg-emerald-500/20 border-emerald-400 text-white shadow-md shadow-emerald-500/10'
-                        : 'bg-zinc-900/70 border-zinc-800 hover:border-zinc-600 text-zinc-200 hover:bg-zinc-800/80 active:scale-[0.99]'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-sm sm:text-base font-medium leading-relaxed">
-                        {opt.text}
+            <div className="bento-card p-7 md:p-9 space-y-6">
+              <div className="space-y-2">
+                <span className="text-[11px] font-mono tracking-widest text-[#8E8E93] uppercase">
+                  {currentQ.scenarioSubtitle || `Scenario #${currentQ.stepNumber}`}
+                </span>
+                <h2 className="text-xl md:text-2xl font-medium tracking-tight text-white leading-snug">
+                  {currentQ.question}
+                </h2>
+              </div>
+
+              {/* Binary Choice Options */}
+              <div className="space-y-3 pt-2">
+                {currentQ.options.map((choice, idx) => {
+                  const isChosen = selectedOption === choice.id;
+                  return (
+                    <button
+                      key={choice.id}
+                      onClick={() => handleSelectChoice(choice.targetTrait, choice.id)}
+                      className={`choice-pill w-full text-left p-5 flex items-start gap-4 ${
+                        isChosen
+                          ? 'border-white bg-white/[0.08] text-white ring-1 ring-white/20'
+                          : 'text-[#E5E5EA]'
+                      }`}
+                    >
+                      <span className="text-xs font-mono text-[#8E8E93] pt-0.5 shrink-0">
+                        0{idx + 1}
                       </span>
-                      <div className={`mt-0.5 h-5 w-5 rounded-full border flex items-center justify-center shrink-0 ${
-                        isSelected ? 'border-emerald-400 bg-emerald-500' : 'border-zinc-700'
-                      }`}>
-                        {isSelected && <div className="h-2 w-2 rounded-full bg-zinc-950" />}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+                      <span className="text-sm font-medium leading-relaxed">
+                        {choice.text}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
 
-        {/* State 3: Lead Capture (B2B Brand Value Add) */}
+        {/* State 3: Lead Capture (Optional Brand Gate) */}
         {gameState === 'lead_capture' && (
-          <div className="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800 space-y-5 animate-in fade-in duration-300">
-            <div className="text-center space-y-2">
-              <div className="h-10 w-10 mx-auto rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Jawabanmu Sedang Dihitung!</h3>
-              <p className="text-xs text-zinc-400 max-w-xs mx-auto">
-                Masukkan identitas singkatmu untuk membuka kartu hasil lengkap dan rekomendasi eksklusif.
+          <div className="bento-card p-8 md:p-10 w-full space-y-6 animate-in fade-in duration-400">
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono tracking-wider uppercase text-[#8E8E93]">
+                Final Step · Persona Ready
+              </span>
+              <h2 className="text-2xl font-semibold tracking-tight text-white">
+                Analisis Karakter Selesai
+              </h2>
+              <p className="text-sm text-[#8E8E93] leading-relaxed">
+                Tuliskan identitasmu untuk personalisasi kartu persona dan klaim rekomendasi karir.
               </p>
             </div>
 
-            <form onSubmit={handleLeadSubmit} className="space-y-4">
-              <div className="space-y-1 text-left">
-                <label className="text-xs font-medium text-zinc-300">Nama Panggilan</label>
+            <form onSubmit={handleLeadSubmit} className="space-y-4 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#A1A1A6]">Nama Lengkap / Panggilan</label>
                 <input
                   type="text"
                   required
                   placeholder="Misal: Alex"
                   value={leadInfo.name}
                   onChange={(e) => setLeadInfo({ ...leadInfo, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-emerald-500 text-white text-sm outline-none transition"
+                  className="w-full px-4 py-3.5 rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-[#636366] text-sm focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all"
                 />
               </div>
 
-              <div className="space-y-1 text-left">
-                <label className="text-xs font-medium text-zinc-300">Email / WhatsApp</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#A1A1A6]">Email / WhatsApp</label>
                 <input
                   type="text"
                   required
-                  placeholder="alex@domain.com atau 0812..."
+                  placeholder="name@company.com"
                   value={leadInfo.email}
                   onChange={(e) => setLeadInfo({ ...leadInfo, email: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-emerald-500 text-white text-sm outline-none transition"
+                  className="w-full px-4 py-3.5 rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-[#636366] text-sm focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3.5 px-4 rounded-xl font-semibold text-sm bg-emerald-500 hover:bg-emerald-400 text-zinc-950 transition cursor-pointer"
+                className="w-full py-4 px-6 rounded-full bg-white text-black font-semibold text-sm transition-all duration-300 hover:bg-[#E5E5EA] active:scale-[0.98] mt-2 shadow-lg shadow-white/10"
               >
-                Buka Kartu Karakter Saya →
+                Buka Hasil Kartu Saya
               </button>
             </form>
           </div>
@@ -282,126 +284,144 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
         {/* State 4: Calculating Interstitial */}
         {gameState === 'calculating' && (
-          <div className="text-center py-16 space-y-4 animate-in fade-in duration-300">
-            <div className="inline-block animate-spin h-10 w-10 border-4 border-emerald-500 border-t-transparent rounded-full" />
-            <div className="text-lg font-bold text-white">Menganalisis Karakter Kerjamu...</div>
-            <p className="text-xs text-zinc-500 font-mono">Applying RIASEC Holland Metric Engine</p>
+          <div className="bento-card p-12 w-full text-center space-y-5 animate-in fade-in duration-300">
+            <div className="w-10 h-10 rounded-full border-2 border-white/20 border-t-white animate-spin mx-auto" />
+            <div className="space-y-1">
+              <h3 className="text-lg font-medium text-white">Menghitung Pola Arketipe...</h3>
+              <p className="text-xs text-[#8E8E93]">Sinkronisasi matriks Holland RIASEC & profil kerja</p>
+            </div>
           </div>
         )}
 
         {/* State 5: Result Card Presentation */}
         {gameState === 'result' && activeResult && (
-          <div className="space-y-6 py-4 animate-in zoom-in-95 duration-500">
-            {/* Downloadable / Shareable Bento Card Preview */}
-            <div 
+          <div className="w-full space-y-6 py-2 animate-in zoom-in-95 duration-500">
+            {/* The 9:16 Persona Bento Card */}
+            <div
               ref={cardRef}
-              className="relative rounded-3xl p-6 sm:p-7 border border-zinc-800 bg-[#121316] shadow-2xl overflow-hidden space-y-5"
+              className="bento-card p-8 md:p-10 space-y-7 bg-[#0D0D0E] border-white/10"
             >
-              {/* Top Card Badge */}
-              <div className="flex items-center justify-between">
-                <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${activeResult.colorTheme.bgBadge}`}>
-                  {activeResult.titleBadge}
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                  {config.brand.brandName}
+              {/* Card Header Tag */}
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-5">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                  <span className="text-[11px] font-mono tracking-widest uppercase text-[#A1A1A6]">
+                    {config.brand.brandName} · CODE #{resultTrait}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.04] text-[#8E8E93]">
+                  {activeResult.archetype}
                 </span>
               </div>
 
-              {/* Title & Tagline */}
-              <div className="space-y-1">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              {/* Persona Title & Badge */}
+              <div className="space-y-2">
+                <div className="text-xs font-mono uppercase tracking-wider text-[#8E8E93]">
+                  {activeResult.titleBadge}
+                </div>
+                <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white leading-tight">
                   {activeResult.name}
                 </h2>
-                <p className="text-xs sm:text-sm text-zinc-400 italic">
-                  "{activeResult.tagline}"
+                <p className="text-sm text-[#A1A1A6] leading-relaxed pt-1">
+                  {activeResult.tagline}
                 </p>
               </div>
 
-              {/* Main Persona Description */}
-              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800/60">
-                {activeResult.description}
-              </p>
-
-              {/* Key Traits & Strengths */}
+              {/* Core Strengths Bento */}
               <div className="space-y-2">
-                <div className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                  Kekuatan Utama (Superpowers)
+                <div className="text-[10px] font-mono uppercase tracking-wider text-[#8E8E93]">
+                  Signature Strengths
                 </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeResult.strengths.map((str, idx) => (
-                    <span key={idx} className="text-xs px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-200 font-medium">
-                      ✓ {str}
+                <div className="flex flex-wrap gap-2">
+                  {activeResult.strengths.map((trait) => (
+                    <span
+                      key={trait}
+                      className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-medium text-[#EDEDED]"
+                    >
+                      {trait}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Grid 2-Kolom: Work Besties & Ideal Role */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800/80">
-                  <span className="text-zinc-500 block mb-0.5">Rekan Kerja Paling Cocok:</span>
-                  <span className="font-semibold text-emerald-400">{activeResult.besties}</span>
+              {/* Work Besties & Career Tip Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                <div className="p-4 rounded-2xl bg-[#141416] border border-white/[0.06] space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-[#8E8E93]">
+                    Work Bestie
+                  </div>
+                  <div className="text-sm font-medium text-white">
+                    {activeResult.besties}
+                  </div>
                 </div>
-                <div className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800/80">
-                  <span className="text-zinc-500 block mb-0.5">Peran Karir Ideal:</span>
-                  <span className="font-semibold text-zinc-200">{activeResult.idealRole}</span>
+
+                <div className="p-4 rounded-2xl bg-[#141416] border border-white/[0.06] space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-[#8E8E93]">
+                    Growth Directive
+                  </div>
+                  <div className="text-xs text-[#A1A1A6] leading-relaxed">
+                    {activeResult.watchout}
+                  </div>
                 </div>
               </div>
 
-              {/* Watchout Note */}
-              <div className="text-[11px] text-zinc-400 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
-                <span className="font-semibold text-amber-400">Tips Karir:</span> {activeResult.watchout}
+              {/* Watermark / Footer */}
+              <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-[#636366]">
+                <span>Verified by RIASEC Engine</span>
+                <span>{leadInfo.name ? `@${leadInfo.name.toLowerCase().replace(/\s+/g, '')}` : 'Personal Report'}</span>
               </div>
             </div>
 
-            {/* Action Bar (Share, Download, Retake, Brand CTA) */}
+            {/* Action Bar */}
             <div className="space-y-3">
-              <a
-                href={config.brand.ctaUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-4 px-6 rounded-2xl font-bold text-sm bg-emerald-500 hover:bg-emerald-400 text-zinc-950 transition duration-200 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {config.brand.ctaText}
-              </a>
-
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={handleDownloadCard}
                   disabled={isExporting}
-                  className="py-3 px-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+                  className="py-3.5 px-3 rounded-2xl bg-white text-black font-semibold text-xs flex items-center justify-center gap-2 transition-all hover:bg-[#E5E5EA] active:scale-[0.98]"
                 >
-                  <Download className="h-4 w-4" />
-                  {isExporting ? 'Proses...' : 'Unduh HD'}
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{isExporting ? 'Exporting...' : 'Unduh HD'}</span>
                 </button>
 
                 <button
-                  onClick={() => {
-                    navigator.clipboard?.writeText(window.location.href);
-                    alert('Link kuis berhasil disalin!');
-                  }}
-                  className="py-3 px-3 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  onClick={handleCopyLink}
+                  className="py-3.5 px-3 rounded-2xl bg-[#141416] border border-white/10 text-white font-medium text-xs flex items-center justify-center gap-2 transition-all hover:bg-[#1C1C1E] active:scale-[0.98]"
                 >
-                  <Share2 className="h-4 w-4" />
-                  Salin Link
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+                  <span>{copied ? 'Tersalin' : 'Bagikan'}</span>
                 </button>
 
                 <button
                   onClick={handleStart}
-                  className="py-3 px-3 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  className="py-3.5 px-3 rounded-2xl bg-[#141416] border border-white/10 text-[#8E8E93] hover:text-white font-medium text-xs flex items-center justify-center gap-2 transition-all hover:bg-[#1C1C1E] active:scale-[0.98]"
                 >
-                  <RotateCcw className="h-4 w-4" />
-                  Ulangi
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Ulangi</span>
                 </button>
               </div>
+
+              {config.brand.ctaUrl && (
+                <a
+                  href={config.brand.ctaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3.5 px-4 rounded-2xl bg-[#18181B] border border-white/10 text-[#EDEDED] hover:text-white font-medium text-xs flex items-center justify-between transition-all hover:border-white/20"
+                >
+                  <span>{config.brand.ctaText}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              )}
             </div>
           </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="w-full text-center py-4 border-t border-zinc-900 text-[11px] text-zinc-600">
-        Powered by White-Label Interactive Quiz Engine • {config.brand.brandName}
+      {/* Subtle Footer */}
+      <footer className="py-6 px-4 text-center">
+        <p className="text-[11px] font-mono tracking-wider text-[#636366]">
+          {config.brand.brandName.toUpperCase()} · POWERED BY WHITE-LABEL ENGINE
+        </p>
       </footer>
     </div>
   );
