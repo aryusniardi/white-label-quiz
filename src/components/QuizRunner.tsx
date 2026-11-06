@@ -132,7 +132,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           
           {/* Top Progress Bar (Cake.me 1:1 Capsule Outline) */}
           <div className="px-5 pt-4 pb-2 bg-[#36B898] border-b-2 border-[#272e27]/20 flex items-center justify-between">
-            <div className="flex-1 mr-3">
+            <div className="flex-1">
               <div className="h-4 bg-white rounded-full border-2 border-[#272e27] overflow-hidden p-0.5">
                 <div
                   className="h-full bg-[#13ab67] rounded-full transition-all duration-300"
@@ -140,12 +140,6 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 />
               </div>
             </div>
-            <a
-              href="/admin"
-              className="text-[10px] font-black uppercase bg-[#272e27] text-white px-2 py-1 rounded-full tracking-wider hover:bg-black transition-colors"
-            >
-              ADMIN
-            </a>
           </div>
 
           {/* STATE 1: INTRO (Wooden Village Board) */}

@@ -9,8 +9,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "What Cake R U? 🍰 Viral Career Archetype Quiz",
-  description: "Jelajahi Desa Pencari Kerja dan temukan kue kepribadian kerjamu!",
+  title: "What Kind of Spender & Survivor Are You? 💳 Consumer Radar",
+  description: "Ikuti tes gaya belanja dan kebiasaan bertahan hidup konsumen 2025!",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
