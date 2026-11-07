@@ -149,22 +149,16 @@ export function QuizRunner({ config }: QuizRunnerProps) {
     <div className="min-h-screen bg-[#F9F8F6] text-[#272e27] flex flex-col justify-between font-sans">
       {/* Centered Mobile-First Stage with exact OOOPEN Lab canvas */}
       <div
-        className="w-full max-w-[540px] mx-auto min-h-screen flex flex-col justify-between relative shadow-sm"
-        style={{
-          backgroundImage: gameState === 'intro' ? "url('/images/ooopen_bg.jpg')" : "url('/images/q_bg.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-        }}
+        className="w-full max-w-[500px] mx-auto min-h-screen flex flex-col justify-between relative shadow-sm bg-[#FDFBF7]"
       >
         
         {/* Main Interactive Container */}
         <div className="flex-1 flex flex-col justify-between">
           
           {/* Top Bar with 1:1 Capsule Progress */}
-          <div className="px-5 pt-6 pb-2 flex items-center justify-between space-x-3">
+          <div className="px-5 pt-5 pb-2 flex items-center justify-between space-x-3">
             <div className="flex-1">
-              <div className="h-3 bg-white/80 rounded-full border border-[#272e27]/30 overflow-hidden p-0.5 shadow-inner">
+              <div className="h-3 bg-[#EAE5D9] rounded-full border-2 border-[#272e27] overflow-hidden p-0.5">
                 <div
                   className="h-full bg-[#13ab67] rounded-full transition-all duration-300"
                   style={{ width: `${gameState === 'intro' ? 10 : gameState === 'result' ? 100 : progressPercent}%` }}
@@ -173,7 +167,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
             </div>
 
             {gameState === 'playing' && (
-              <span className="font-pixel text-[9px] text-[#272e27] bg-white/70 px-2 py-0.5 rounded-full border border-[#272e27]/20">
+              <span className="font-pixel text-[9px] text-[#272e27] bg-[#EAE5D9] px-2 py-0.5 rounded-full border border-[#272e27]">
                 {currentQuestionIndex + 1}/{totalQuestions}
               </span>
             )}
@@ -182,7 +176,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           {/* STATE 1: INTRO (Pixel Art Hero Showcase) */}
           {gameState === 'intro' && (
             <div className="flex-1 flex flex-col justify-between p-5">
-              <div className="relative w-full max-w-[280px] h-[260px] mx-auto rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] bg-[#F8F3E8] mt-2">
+              <div className="relative w-full max-w-[260px] h-[240px] mx-auto rounded-3xl overflow-hidden border-4 border-[#272e27] shadow-[5px_5px_0px_#272e27] bg-[#F8F3E8] mt-2 flex items-center justify-center">
                 <Image
                   src="/images/pixel/scene_00_cover.png"
                   alt="Workplace Radar 2026 Cover"
@@ -193,14 +187,14 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 />
               </div>
 
-              <div className="my-auto py-6 text-center px-2 bg-white/85 backdrop-blur-xs rounded-2xl border border-[#272e27]/15 p-4 my-4 shadow-sm">
-                <span className="font-pixel text-[8px] bg-[#FFD482] text-[#272e27] px-2.5 py-1 rounded-md border border-[#272e27]/40 uppercase shadow-xs">
+              <div className="my-auto py-5 text-center px-4 bg-white rounded-2xl border-3 border-[#272e27] my-3 shadow-[4px_4px_0px_#272e27]">
+                <span className="font-pixel text-[8px] bg-[#FFD482] text-[#272e27] px-2.5 py-1 rounded border border-[#272e27] uppercase">
                   WORKPLACE RADAR 2026
                 </span>
-                <h1 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight leading-relaxed mt-4 mb-2">
+                <h1 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight leading-relaxed mt-3 mb-2">
                   {config.title}
                 </h1>
-                <p className="text-xs text-[#444] font-medium leading-relaxed max-w-xs mx-auto">
+                <p className="text-xs text-[#555] font-medium leading-relaxed max-w-xs mx-auto">
                   {config.subtitle}
                 </p>
               </div>
@@ -208,7 +202,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               <div className="pb-4">
                 <button
                   onClick={handleStart}
-                  className="w-full py-4 bg-[#272e27] hover:bg-black text-white font-pixel text-[11px] rounded-full border-2 border-[#272e27] shadow-[0_4px_0_#111] active:translate-y-1 active:shadow-[0_1px_0_#111] transition-all"
+                  className="w-full py-4 bg-[#272e27] hover:bg-black text-white font-pixel text-[11px] rounded-full border-3 border-[#272e27] shadow-[0_4px_0_#111] active:translate-y-1 active:shadow-[0_1px_0_#111] transition-all"
                 >
                   MULAI TES SEKARANG!
                 </button>
@@ -218,41 +212,41 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
           {/* STATE 2: PLAYING (Scene Village + Question + 2 Black Pill Options) */}
           {gameState === 'playing' && currentQ && (
-            <div className="flex-1 flex flex-col justify-start p-4 sm:p-5">
-              {/* Top Pixel Scene Image - Seamless Cake.me illustration container */}
-              <div className="relative w-full max-w-[260px] h-[180px] sm:h-[200px] mx-auto flex items-center justify-center">
+            <div className="flex-1 flex flex-col justify-between p-4 sm:p-5">
+              {/* Question Scene Illustration in a Cute Cake.me Card */}
+              <div className="relative w-full max-w-[250px] h-[210px] mx-auto rounded-3xl overflow-hidden border-4 border-[#272e27] shadow-[5px_5px_0px_#272e27] bg-[#F8F3E8] flex items-center justify-center mt-1">
                 <Image
                   src={currentQ.imageSrc}
                   alt={currentQ.scenarioTitle}
                   fill
-                  className="object-contain"
+                  className="object-contain p-2"
                   style={{ imageRendering: 'pixelated' }}
                   priority
                 />
-                <div className="absolute bottom-1 right-1 bg-[#272e27]/80 text-white/90 px-2 py-0.5 rounded text-[7px] font-pixel">
+                <div className="absolute bottom-1 right-1 bg-[#272e27] text-white px-2 py-0.5 rounded text-[7px] font-pixel border border-white/20">
                   {currentQ.scenarioTitle}
                 </div>
               </div>
 
               {/* Seamless Centered Question */}
-              <div className="mt-2 mb-4 text-center px-2">
-                <div className="inline-block text-[8px] font-pixel text-[#13ab67] bg-white/90 px-2.5 py-0.5 rounded-full border border-[#272e27]/15 uppercase tracking-wider mb-2 shadow-xs">
+              <div className="my-3 text-center px-2">
+                <div className="inline-block text-[8px] font-pixel text-[#13ab67] bg-white px-2.5 py-0.5 rounded-full border border-[#272e27]/20 uppercase tracking-wider mb-2 shadow-xs">
                   {currentQ.categoryBadge}
                 </div>
-                <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug">
+                <h2 className="text-xs sm:text-sm font-bold text-[#272e27] leading-snug">
                   {currentQ.question}
                 </h2>
               </div>
 
               {/* Cake.me Pill Choices (Dark Charcoal Pills with High Contrast White Type) */}
-              <div className="space-y-2.5 pb-2 mt-auto">
+              <div className="space-y-2.5 pb-2">
                 {currentQ.choices.map((choice, idx) => {
                   const isSelected = selectedOption === choice.id;
                   return (
                     <button
                       key={choice.id}
                       onClick={() => handleSelectChoice(choice.targetTrait, choice.id)}
-                      className={`w-full text-left p-3.5 rounded-full border transition-all flex items-center space-x-3 ${
+                      className={`w-full text-left p-3.5 rounded-full border-2 transition-all flex items-center space-x-3 ${
                         isSelected
                           ? 'bg-[#13ab67] border-[#13ab67] text-white scale-[0.98]'
                           : 'bg-[#272e27] hover:bg-black border-[#272e27] text-white shadow-[0_3px_0_#111] active:translate-y-0.5'
@@ -290,11 +284,6 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               <div
                 ref={cardRef}
                 className="bg-[#FFFDF7] border-4 border-[#272e27] p-4 shadow-[6px_6px_0px_#272e27] mb-4 text-[#272e27] relative"
-                style={{
-                  backgroundImage: "url('/images/q_bg.jpg')",
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center top',
-                }}
               >
                 {/* Header Subtitle */}
                 <div className="flex items-center justify-between border-b-2 border-[#272e27]/20 pb-2 mb-3">
