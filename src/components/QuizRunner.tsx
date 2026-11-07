@@ -149,7 +149,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
     <div
       className="min-h-screen text-[#272e27] flex flex-col justify-between font-sans bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: gameState === 'intro' ? "url('/images/ooopen_bg.jpg')" : "url('/images/q_bg.jpg')",
+        backgroundImage: "url('/images/ooopen_bg.jpg')",
       }}
     >
       {/* Centered Mobile-First Stage */}
