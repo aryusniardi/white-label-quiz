@@ -272,9 +272,6 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           {/* STATE 3: CALCULATING TRANSITION */}
           {gameState === 'calculating' && (
             <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#36B898] text-center">
-              <div className="w-16 h-16 bg-white rounded-2xl border-4 border-[#272e27] flex items-center justify-center text-3xl shadow-[4px_4px_0px_#272e27] animate-bounce mb-4">
-                ⚡
-              </div>
               <h3 className="text-xs sm:text-sm font-pixel text-[#272e27] tracking-wider uppercase mb-2">
                 MEMETAKAN PROFIL KERJA 2026...
               </h3>
@@ -341,7 +338,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                   {activeResult.workplaceSuperpower && activeResult.workplaceSuperpower.length > 0 && (
                     <div className="bg-[#E9F5ED] p-2.5 border-2 border-[#272e27]">
                       <span className="font-pixel text-[8px] block text-[#155724] uppercase mb-1">
-                        ✨ KELEBIHAN DI TEMPAT KERJA:
+                        KELEBIHAN DI TEMPAT KERJA:
                       </span>
                       <ul className="space-y-1 text-[13px] text-[#272e27] leading-snug">
                         {activeResult.workplaceSuperpower.map((sp, idx) => (
@@ -354,11 +351,11 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                     </div>
                   )}
 
-                  {/* Kebiasaan Nyata / "Lu Banget" */}
+                  {/* Kebiasaan Nyata */}
                   {activeResult.workplaceHabits && activeResult.workplaceHabits.length > 0 && (
                     <div className="bg-[#FFF8E7] p-2.5 border-2 border-[#272e27]">
                       <span className="font-pixel text-[8px] block text-[#B45309] uppercase mb-1">
-                        👀 CIRI KHAS ("LOH KOK BENER?!"):
+                        CIRI KHAS & KEBIASAAN:
                       </span>
                       <ul className="space-y-1 text-[13px] text-[#272e27] leading-snug">
                         {activeResult.workplaceHabits.map((hb, idx) => (
@@ -375,7 +372,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                   {activeResult.workplaceWeakness && activeResult.workplaceWeakness.length > 0 && (
                     <div className="bg-[#FDE8E8] p-2.5 border-2 border-[#272e27]">
                       <span className="font-pixel text-[8px] block text-[#9B1C1C] uppercase mb-1">
-                        ⚠️ HAL YANG BIKIN CEPAT DROP:
+                        HAL YANG BIKIN CEPAT DROP:
                       </span>
                       <ul className="space-y-1 text-[13px] text-[#272e27] leading-snug">
                         {activeResult.workplaceWeakness.map((wn, idx) => (

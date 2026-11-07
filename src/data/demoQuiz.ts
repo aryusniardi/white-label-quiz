@@ -2,8 +2,8 @@ import { QuizConfig } from '@/types/quiz';
 
 export const consumerQuizConfig: QuizConfig = {
   id: 'workplace_survival_2026',
-  title: 'Tes Gaya Bertahan Hidup & Coping Style Pekerja 2026',
-  subtitle: 'Tes Gaya Kerja, Adopsi AI & Arketipe Bertahan Hidup Gen Z di Era Hybrid 2026',
+  title: 'Tes Arketipe Kerja & Survival Mode 2026',
+  subtitle: 'Tes dinamika kerja, navigasi AI, dan coping style pekerja modern di era hybrid',
   brandName: 'PULSE 2026',
   questions: [
     {

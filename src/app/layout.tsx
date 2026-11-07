@@ -21,8 +21,8 @@ const silkscreen = Silkscreen({
 });
 
 export const metadata: Metadata = {
-  title: "Tes Gaya Bertahan Hidup & Coping Style Pekerja 2026 🏢 Workplace Radar",
-  description: "8 Dilema nyata era AI, hybrid work, & anti-hustle culture. Temukan 1 dari 16 arketipe kepribadian kerjamu di tahun 2026!",
+  title: "Tes Arketipe Kerja & Survival Mode 2026",
+  description: "8 Dilema nyata navigasi AI, ritme hybrid, dan coping style pekerja modern di tahun 2026.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
