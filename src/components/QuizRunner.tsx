@@ -183,7 +183,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
               <div className="my-auto py-6 text-center px-2 bg-white/85 backdrop-blur-xs rounded-2xl border border-[#272e27]/15 p-4 my-4 shadow-sm">
                 <span className="font-pixel text-[8px] bg-[#FFD482] text-[#272e27] px-2.5 py-1 rounded-md border border-[#272e27]/40 uppercase shadow-xs">
-                  CONSUMER RADAR 2025
+                  WORKPLACE RADAR 2026
                 </span>
                 <h1 className="text-xs sm:text-sm font-pixel uppercase text-[#272e27] tracking-tight leading-relaxed mt-4 mb-2">
                   {config.title}
