@@ -146,10 +146,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
   const progressPercent = Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100);
 
   return (
-    <div className="min-h-screen bg-[#F9F8F6] text-[#272e27] flex flex-col justify-between font-sans">
+    <div className="min-h-screen bg-[#FDF8EE] text-[#272e27] flex flex-col justify-between font-sans">
       {/* Centered Mobile-First Stage with exact OOOPEN Lab canvas */}
       <div
-        className="w-full max-w-[500px] mx-auto min-h-screen flex flex-col justify-between relative shadow-sm bg-[#FDFBF7]"
+        className="w-full max-w-[500px] mx-auto min-h-screen flex flex-col justify-between relative bg-[#FDF8EE]"
       >
         
         {/* Main Interactive Container */}
@@ -425,10 +425,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
         </div>
 
-        {/* Persistent OOOPEN Lab Style Footer Banner */}
-        <div className="w-full bg-[#111] py-2 px-4 text-center border-t border-black/40">
-          <span className="text-[10px] text-white/70 font-mono tracking-wider">
-            Powered by <strong className="text-white underline">Pulse Engine</strong>
+        {/* Subtle Warm Footer Integrated with Canvas */}
+        <div className="w-full py-3 px-4 text-center">
+          <span className="text-[10px] text-[#272e27]/60 font-pixel tracking-wider">
+            POWERED BY <strong className="text-[#272e27]">PULSE ENGINE</strong>
           </span>
         </div>
 
