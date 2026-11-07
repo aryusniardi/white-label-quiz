@@ -21,8 +21,8 @@ const silkscreen = Silkscreen({
 });
 
 export const metadata: Metadata = {
-  title: "What Kind of Spender & Survivor Are You? 💳 Consumer Radar",
-  description: "Ikuti tes gaya belanja dan kebiasaan bertahan hidup konsumen 2025!",
+  title: "Tes Gaya Bertahan Hidup & Coping Style Pekerja 2026 🏢 Workplace Radar",
+  description: "8 Dilema nyata era AI, hybrid work, & anti-hustle culture. Temukan 1 dari 16 arketipe kepribadian kerjamu di tahun 2026!",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

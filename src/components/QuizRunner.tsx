@@ -45,17 +45,28 @@ export function QuizRunner({ config }: QuizRunnerProps) {
         setCurrentQuestionIndex((prev) => prev + 1);
         setSelectedOption(null);
       } else {
-        // Calculate Top Trait
-        let topTrait = 'M';
-        let maxScore = -1;
-        for (const [t, s] of Object.entries(updatedScores)) {
-          if (s > maxScore) {
-            maxScore = s;
-            topTrait = t;
-          }
-        }
-        setResultTrait(topTrait);
-        triggerCalculationScreen(topTrait);
+        // Sumbu 1: E (Extrovert Collaborator) vs I (Introvert Focus)
+        // Sumbu 2: A (AI Automator) vs M (Manual Artisan)
+        // Sumbu 3: B (Boundary Guardian) vs H (Hustle Climber)
+        // Sumbu 4: P (Passion Impact) vs S (Stability Security)
+        const eScore = updatedScores['E'] || 0;
+        const iScore = updatedScores['I'] || 0;
+        const aScore = updatedScores['A'] || 0;
+        const mScore = updatedScores['M_TOOL'] || 0;
+        const bScore = updatedScores['B'] || 0;
+        const hScore = updatedScores['H'] || 0;
+        const pScore = updatedScores['P'] || 0;
+        const sScore = updatedScores['S'] || 0;
+
+        const dim1 = eScore >= iScore ? 'E' : 'I';
+        const dim2 = aScore >= mScore ? 'A' : 'M';
+        const dim3 = bScore >= hScore ? 'B' : 'H';
+        const dim4 = pScore >= sScore ? 'P' : 'S';
+
+        const code = `${dim1}${dim2}${dim3}${dim4}`;
+        const finalCode = config.results[code] ? code : (Object.keys(config.results)[0] || 'IABS');
+        setResultTrait(finalCode);
+        triggerCalculationScreen(finalCode);
       }
     }, 200);
   };
@@ -255,10 +266,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 ⚡
               </div>
               <h3 className="text-xs sm:text-sm font-pixel text-[#272e27] tracking-wider uppercase mb-2">
-                MEMETAKAN PROFIL BELANJAMU...
+                MEMETAKAN PROFIL KERJA 2026...
               </h3>
               <p className="text-[10px] font-pixel text-white/90">
-                MENGKALKULASI RADAR 2025
+                MENGKALKULASI 16 ARKETIPE WORKPLACE
               </p>
             </div>
           )}
@@ -279,10 +290,10 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 {/* Header Subtitle */}
                 <div className="flex items-center justify-between border-b-2 border-[#272e27]/20 pb-2 mb-3">
                   <span className="text-[8px] font-pixel text-[#13ab67] uppercase">
-                    {config.brandName} • 2025 RADAR
+                    {config.brandName} • 2026 RADAR
                   </span>
                   <span className="text-[7.5px] font-pixel bg-[#272e27] text-white px-2 py-1">
-                    BURNOUT: {activeResult.stressCopingIndex}
+                    BATTERY: {activeResult.stressCopingIndex}
                   </span>
                 </div>
 
@@ -317,8 +328,8 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                 {/* Persona Attributes Breakdown */}
                 <div className="space-y-2 text-xs font-fun">
                   <div className="bg-[#FAEDCD] p-2.5 border-2 border-[#272e27]">
-                    <span className="font-pixel text-[8px] block text-[#6b4226] uppercase mb-0.5">TRIGGER BELANJA:</span>
-                    <span className="text-[14px] leading-tight text-[#272e27]">{activeResult.spendingTrigger}</span>
+                    <span className="font-pixel text-[8px] block text-[#6b4226] uppercase mb-0.5">COPING ITEM 2026:</span>
+                    <span className="text-[14px] leading-tight text-[#272e27]">{activeResult.copingItem || activeResult.spendingTrigger}</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-center">

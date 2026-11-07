@@ -18,11 +18,11 @@ export function RadarChart({ stats }: RadarChartProps) {
   const radius = 75;
 
   const traits = [
-    { key: 'impulse', label: 'SPONTAN' },
-    { key: 'discipline', label: 'DISIPLIN' },
-    { key: 'experience', label: 'MEMORI' },
+    { key: 'impulse', label: 'OTONOMI' },
+    { key: 'discipline', label: 'BATASAN' },
+    { key: 'experience', label: 'AI SKILL' },
     { key: 'social', label: 'SOSIAL' },
-    { key: 'practical', label: 'PRAKTIS' },
+    { key: 'practical', label: 'STRATEGIS' },
     { key: 'resilience', label: 'RESILIENSI' },
   ];
 
