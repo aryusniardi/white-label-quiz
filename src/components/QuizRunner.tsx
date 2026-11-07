@@ -173,7 +173,7 @@ export function QuizRunner({ config }: QuizRunnerProps) {
               <div className="relative w-full h-[240px] rounded-2xl overflow-hidden border-2 border-[#272e27]/30 shadow-md bg-transparent mt-2">
                 <Image
                   src="/images/pixel/scene_1_burnout.png"
-                  alt="2025 Consumer Dilemma"
+                  alt="2026 Workplace Dilemma"
                   fill
                   className="object-cover rounded-2xl"
                   style={{ imageRendering: 'pixelated' }}
