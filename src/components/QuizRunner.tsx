@@ -114,12 +114,14 @@ export function QuizRunner({ config }: QuizRunnerProps) {
       const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://white-label-quiz.pages.dev';
       const shareText = `Tipe Kerjaku 2026: ${activeResult.name} (${activeResult.tagline})\n\nCek arketipe bertahan hidup kerjamu di sini:\n${shareUrl}`;
 
+      // In iOS / Web Share API, sharing ONLY files with text in navigator.share causes 
+      // iMessage/WhatsApp to split or drop the URL. 
+      // The clean pattern: share with files + text (single payload), or fallback directly.
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: `Tipe Kerjaku 2026: ${activeResult.name}`,
           text: shareText,
-          url: shareUrl,
         });
       } else if (navigator.share) {
         await navigator.share({
@@ -180,12 +182,12 @@ export function QuizRunner({ config }: QuizRunnerProps) {
           {/* STATE 1: INTRO (Pixel Art Hero Showcase) */}
           {gameState === 'intro' && (
             <div className="flex-1 flex flex-col justify-between p-5">
-              <div className="relative w-full h-[240px] rounded-2xl overflow-hidden border-2 border-[#272e27]/30 shadow-md bg-transparent mt-2">
+              <div className="relative w-full max-w-[280px] h-[260px] mx-auto rounded-2xl overflow-hidden border-3 border-[#272e27] shadow-[4px_4px_0px_#272e27] bg-[#F8F3E8] mt-2">
                 <Image
-                  src="/images/pixel/scene_1_burnout.png"
-                  alt="2026 Workplace Dilemma"
+                  src="/images/pixel/scene_00_cover.png"
+                  alt="Workplace Radar 2026 Cover"
                   fill
-                  className="object-cover rounded-2xl"
+                  className="object-contain p-2"
                   style={{ imageRendering: 'pixelated' }}
                   priority
                 />
@@ -216,34 +218,34 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
           {/* STATE 2: PLAYING (Scene Village + Question + 2 Black Pill Options) */}
           {gameState === 'playing' && currentQ && (
-            <div className="flex-1 flex flex-col justify-between p-5">
-              {/* Top Pixel Scene Image - Transparent seamless blend */}
-              <div className="relative w-full h-[240px] rounded-2xl overflow-hidden border-2 border-[#272e27]/20 shadow-md bg-transparent">
+            <div className="flex-1 flex flex-col justify-start p-4 sm:p-5">
+              {/* Top Pixel Scene Image - Seamless Cake.me illustration container */}
+              <div className="relative w-full max-w-[260px] h-[180px] sm:h-[200px] mx-auto flex items-center justify-center">
                 <Image
                   src={currentQ.imageSrc}
                   alt={currentQ.scenarioTitle}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   style={{ imageRendering: 'pixelated' }}
                   priority
                 />
-                <div className="absolute bottom-2 left-2 bg-[#272e27]/90 text-white px-2.5 py-1 rounded text-[7.5px] font-pixel border border-white/20 shadow-sm">
+                <div className="absolute bottom-1 right-1 bg-[#272e27]/80 text-white/90 px-2 py-0.5 rounded text-[7px] font-pixel">
                   {currentQ.scenarioTitle}
                 </div>
               </div>
 
-              {/* Seamless Centered Question (No heavy white box blocking the scenery) */}
-              <div className="my-3 text-center px-2">
-                <div className="inline-block text-[8px] font-pixel text-[#13ab67] bg-white/80 px-2 py-0.5 rounded border border-[#272e27]/15 uppercase tracking-wider mb-2 shadow-xs">
+              {/* Seamless Centered Question */}
+              <div className="mt-2 mb-4 text-center px-2">
+                <div className="inline-block text-[8px] font-pixel text-[#13ab67] bg-white/90 px-2.5 py-0.5 rounded-full border border-[#272e27]/15 uppercase tracking-wider mb-2 shadow-xs">
                   {currentQ.categoryBadge}
                 </div>
-                <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug drop-shadow-xs">
+                <h2 className="text-sm sm:text-base font-bold text-[#272e27] leading-snug">
                   {currentQ.question}
                 </h2>
               </div>
 
               {/* Cake.me Pill Choices (Dark Charcoal Pills with High Contrast White Type) */}
-              <div className="space-y-3 pb-4">
+              <div className="space-y-2.5 pb-2 mt-auto">
                 {currentQ.choices.map((choice, idx) => {
                   const isSelected = selectedOption === choice.id;
                   return (
