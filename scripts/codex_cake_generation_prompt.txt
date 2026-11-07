@@ -1,0 +1,85 @@
+You are generating cute, minimalist, 16-bit pixel art images for the 'Workplace Survival 2026' personality quiz in the exact style of the 'What Cake R U' (Cake.me) test.
+
+Style guidelines:
+- Exact aesthetic as the cupcake sample: cute chibi character or minimalist iconic item centered on a plain solid off-white/cream background.
+- Clean 16-bit pixel grid, thick dark brown/black outline, pastel and soft warm colors.
+- Zero complex scenery, zero background clutter, zero realistic lighting. Single centered subject.
+
+Please generate the following images using your native image_gen__imagegen tool.
+After generating each image, copy/write it to its target destination path in `/home/ubuntu/white-label-quiz/public/images/pixel/`.
+
+--- SCENES (8 QUESTION ITEMS) ---
+1. `scene_work_1_ai.png`
+   Prompt: "cute minimalist 16-bit pixel art of a tiny retro desktop computer with a glowing green smiling screen, wearing a small propeller cap, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no background room"
+
+2. `scene_work_2_boundary.png`
+   Prompt: "cute minimalist 16-bit pixel art of an analog alarm clock showing 5:00 with a cute sleeping eye and a tiny brass lock beside it, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+3. `scene_work_3_social.png`
+   Prompt: "cute minimalist 16-bit pixel art of two cute smiling takeout boba milk tea and iced coffee cups standing together happily, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+4. `scene_work_4_promotion.png`
+   Prompt: "cute minimalist 16-bit pixel art of a shiny gold winner trophy cup wearing a cute tiny necktie with blushing cheeks, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+5. `scene_work_5_coping.png`
+   Prompt: "cute minimalist 16-bit pixel art of a cute smiling pillow hugging a matcha latte mug, cozy coping mode, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+6. `scene_work_6_future.png`
+   Prompt: "cute minimalist 16-bit pixel art of a magic quill pen drawing a glowing green pixel sparkle line, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+7. `scene_work_7_meeting.png`
+   Prompt: "cute minimalist 16-bit pixel art of a cute yellow memo sticky note with a smiling face wearing small headphones, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+8. `scene_work_8_craft.png`
+   Prompt: "cute minimalist 16-bit pixel art of a glowing golden piggy bank with tiny wings and a cheerful smile, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors, no scenery"
+
+--- BADGES (16 WORKPLACE ARCHETYPE MASCOTS) ---
+9. `badge_EABP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a robotic lightning bolt creature wearing cool tiny visor glasses and sneakers, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+10. `badge_EABS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a cheerful navy blue naval captain dolphin with a golden anchor badge, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+11. `badge_EAHP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of an energetic red rocket ship character with smiling face and tiny exhaust flame, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+12. `badge_EAHS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a clever raccoon wearing hacker glasses holding a gold coin, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+13. `badge_EIBP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a warm gentle capybara wearing a green leaf bandana and holding a hot mug, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+14. `badge_EIBS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a polite smiling white dove holding an olive branch with pink cheeks, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+15. `badge_EIHP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a fiery red cardinal bird wearing a tiny party party hat waving a pennant, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+16. `badge_EIHS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a friendly golden retriever wearing a blue necktie and carrying a briefcase, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+17. `badge_IABP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of an adorable little purple ghost wearing oversized soundproof headphones, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+18. `badge_IABS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a cozy sleeping sloth hanging on a bamboo branch with a tiny battery icon at 100%, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+19. `badge_IAHP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a focused little robot engineer with a single antenna holding a tiny golden wrench, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+20. `badge_IAHS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a sneaky black ninja cat with glowing yellow eyes holding a lucky bag, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+21. `badge_IIBP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a peaceful miniature bonsai tree in a pot with a gentle smiling face, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+22. `badge_IIBS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a safe little green turtle tucked comfortably inside a mossy shell, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+23. `badge_IIHP.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a sharp-eyed snowy owl wearing round glasses and reading a tiny scroll, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+24. `badge_IIHS.png`
+   Prompt: "cute minimalist 16-bit pixel art mascot of a sturdy gray stone pebble golem holding a little yellow umbrella, centered on solid cream background, cake.me style, thick pixel outline, flat pastel colors"
+
+Please execute and generate all 24 images, saving each file directly to `/home/ubuntu/white-label-quiz/public/images/pixel/<filename>`.

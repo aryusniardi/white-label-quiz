@@ -107,19 +107,29 @@ export function QuizRunner({ config }: QuizRunnerProps) {
 
       const res = await fetch(dataUrl);
       const blob = await res.blob();
-      const file = new File([blob], `${config.brandName.toLowerCase()}-persona-card.png`, {
+      const file = new File([blob], `${config.brandName.toLowerCase()}-workplace-card.png`, {
         type: 'image/png',
       });
+
+      const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://white-label-quiz.pages.dev';
+      const shareText = `Tipe Kerjaku 2026: ${activeResult.name} (${activeResult.tagline})\n\nCek arketipe bertahan hidup kerjamu di sini:\n${shareUrl}`;
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: `Tipe Belanjaku: ${activeResult.name}`,
-          text: `Cek arketipe pengeluaranmu di ${config.title}!`,
+          title: `Tipe Kerjaku 2026: ${activeResult.name}`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } else if (navigator.share) {
+        await navigator.share({
+          title: `Tipe Kerjaku 2026: ${activeResult.name}`,
+          text: shareText,
+          url: shareUrl,
         });
       } else {
         const link = document.createElement('a');
-        link.download = `${config.brandName.toLowerCase()}-persona-card.png`;
+        link.download = `${config.brandName.toLowerCase()}-workplace-card.png`;
         link.href = dataUrl;
         link.click();
       }
