@@ -335,8 +335,59 @@ export function QuizRunner({ config }: QuizRunnerProps) {
                   <RadarChart stats={activeResult.dimensions} />
                 </div>
 
-                {/* Persona Attributes Breakdown */}
+                {/* Sifat & Psikologi Kerja Ala Cake.me */}
                 <div className="space-y-2 text-xs font-fun">
+                  {/* Kelebihan di Tempat Kerja */}
+                  {activeResult.workplaceSuperpower && activeResult.workplaceSuperpower.length > 0 && (
+                    <div className="bg-[#E9F5ED] p-2.5 border-2 border-[#272e27]">
+                      <span className="font-pixel text-[8px] block text-[#155724] uppercase mb-1">
+                        ✨ KELEBIHAN DI TEMPAT KERJA:
+                      </span>
+                      <ul className="space-y-1 text-[13px] text-[#272e27] leading-snug">
+                        {activeResult.workplaceSuperpower.map((sp, idx) => (
+                          <li key={idx} className="flex items-start space-x-1.5">
+                            <span className="text-[#13ab67] font-bold">›</span>
+                            <span>{sp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Kebiasaan Nyata / "Lu Banget" */}
+                  {activeResult.workplaceHabits && activeResult.workplaceHabits.length > 0 && (
+                    <div className="bg-[#FFF8E7] p-2.5 border-2 border-[#272e27]">
+                      <span className="font-pixel text-[8px] block text-[#B45309] uppercase mb-1">
+                        👀 CIRI KHAS ("LOH KOK BENER?!"):
+                      </span>
+                      <ul className="space-y-1 text-[13px] text-[#272e27] leading-snug">
+                        {activeResult.workplaceHabits.map((hb, idx) => (
+                          <li key={idx} className="flex items-start space-x-1.5">
+                            <span className="text-[#F59E0B] font-bold">›</span>
+                            <span>{hb}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Blindspot / Titik Lemah */}
+                  {activeResult.workplaceWeakness && activeResult.workplaceWeakness.length > 0 && (
+                    <div className="bg-[#FDE8E8] p-2.5 border-2 border-[#272e27]">
+                      <span className="font-pixel text-[8px] block text-[#9B1C1C] uppercase mb-1">
+                        ⚠️ HAL YANG BIKIN CEPAT DROP:
+                      </span>
+                      <ul className="space-y-1 text-[13px] text-[#272e27] leading-snug">
+                        {activeResult.workplaceWeakness.map((wn, idx) => (
+                          <li key={idx} className="flex items-start space-x-1.5">
+                            <span className="text-[#E63946] font-bold">›</span>
+                            <span>{wn}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <div className="bg-[#FAEDCD] p-2.5 border-2 border-[#272e27]">
                     <span className="font-pixel text-[8px] block text-[#6b4226] uppercase mb-0.5">COPING ITEM 2026:</span>
                     <span className="text-[14px] leading-tight text-[#272e27]">{activeResult.copingItem || activeResult.spendingTrigger}</span>

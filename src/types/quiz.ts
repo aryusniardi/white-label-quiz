@@ -39,6 +39,9 @@ export interface QuizResult {
   compatiblePartner: string;
   clashingPartner: string;
   actionAdvice: string;
+  workplaceSuperpower?: string[]; // Kelebihan Utama di Tempat Kerja
+  workplaceWeakness?: string[]; // Hal yang Bikin Drop / Burnout
+  workplaceHabits?: string[]; // Kebiasaan Nyata ("Loh kok bener!")
 }
 
 export interface QuizConfig {
